@@ -1,4 +1,5 @@
-import React, { Fragment, useState } from 'react'
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { Fragment } from 'react'
 import { useParams } from 'react-router-dom';
 import MetaData from '../layout/metaData'
 import Sidebar from '../Admin/Sidebar';
@@ -56,7 +57,7 @@ const Home = () => {
                             {filteredProducts.map(product => (
                                 <div key={product.id} className="col-sm-12 col-md-6 col-lg-4 my-3">
                                     <div className="card p-3 rounded">
-                                        <img className="card-img-top mx-auto" src={product.imageUrl} />
+                                        <img className="card-img-top mx-auto" src={product.imageUrl} alt='' />
                                         <div className="card-body d-flex flex-column">
                                             <small className="card-title">
                                                 <a href="#">{product.id}</a>
