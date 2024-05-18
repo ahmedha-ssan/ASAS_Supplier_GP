@@ -4,7 +4,7 @@ import { ProgressBar } from 'react-bootstrap';
 import Sidebar from './Sidebar'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { getDatabase, ref as rtdbRef, push } from 'firebase/database';
-import app from '../../firebase.js';
+import {app} from '../../firebase.js';
 
 const storage = getStorage(app);
 const database = getDatabase(app);

@@ -1,15 +1,15 @@
 import React, { Fragment } from 'react'
 import '../../App.css'
 import { Link } from 'react-router-dom';
+
 const Header = () => {
     return (
         <Fragment>
             <nav className="navbar row">
                 <div className="col-12 col-md-3">
                     <div className="navbar-brand">
-                        {/* Image wrapped inside a Link component */}
                         <Link to="/">
-                            <img src="images/shopit_logo.png" alt="ShopIt Logo" />
+                            <img src="images/hs.png" alt="ShopIt Logo" />
                         </Link>
                     </div>
                 </div>
@@ -31,7 +31,7 @@ const Header = () => {
                 </div>
 
                 <div className="col-12 col-md-3 mt-4 mt-md-0 text-center">
-                    <button className="btn" id="login_btn">Login</button>
+                    <Link to="/Login" className="btn ml-4" id="login_btn">Login</Link>
                 </div>
             </nav>
         </Fragment>

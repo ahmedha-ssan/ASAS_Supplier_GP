@@ -5,7 +5,7 @@ import Sidebar from './Sidebar'
 const NewDelivery = () => {
     return (
         <Fragment>
-            <MetaData title={'New Delivery'} />
+            <MetaData title={'Add Delivery'} />
             <div className="row">
                 <div className="col-12 col-md-2">
                     <Sidebar />
@@ -15,7 +15,7 @@ const NewDelivery = () => {
                     <Fragment>
                         <div className="wrapper my-5">
                             <form className="shadow-lg" encType='multipart/form-data'>
-                                <h1 className="mb-4">New Delivery</h1>
+                                <h1 className="mb-4">Add Delivery Man</h1>
 
                                 <div className="form-group">
                                     <label for="name_field">Name</label>
