@@ -1,7 +1,8 @@
 import React, { Fragment, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebase'
+import { auth, db } from '../../firebase'
+import { collection, addDoc, getDoc, doc } from "firebase/firestore";
 import MetaData from '../layout/metaData';
 import Loader from '../layout/Loader'
 
@@ -35,14 +36,32 @@ const Login = () => {
             alert('Password must be at least 6 characters long');
             return;
         }
+
+
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            const { user } = await signInWithEmailAndPassword(auth, email, password);
             setLoading(false);
-            console.log("sad")
-            navigate('/'); // Redirect to home or any other page on successful login
+
+            // Fetch user data from Firestore
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                console.log(userData.usertype)
+                console.log("userData.userType")
+
+                if (userData.usertype == 'supplier') {
+                    navigate('/');
+                } else {
+                    setLoading(false);
+                    alert('Only suppliers are allowed to sign in');
+                    // Sign out the user
+                    await auth.signOut();
+                }
+            } else {
+                console.error('User data not found');
+            }
         } catch (error) {
             setLoading(false);
-            console.log("err")
             alert(error.message); // Handle error appropriately in your application
         }
     };

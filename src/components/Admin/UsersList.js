@@ -1,23 +1,44 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { collection, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../../firebase';
 import Sidebar from './Sidebar';
 import MetaData from '../layout/metaData';
+import Loader from '../layout/Loader';
 
 const UsersList = () => {
-    // Dummy users data
-    const users = [
-        { _id: 1, name: 'User 1', email: 'user1@example.com', role: 'Admin' },
-        { _id: 2, name: 'User 2', email: 'user2@example.com', role: 'User' },
-        // Add more dummy users as needed
-    ];
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const setUsers = () => {
+    useEffect(() => {
+        const fetchUsers = async () => {
+            const usersCollection = collection(db, 'users');
+            const usersSnapshot = await getDocs(query(usersCollection, where('usertype', '==', 'delivery')));
+            const usersList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setUsers(usersList);
+            setLoading(false);
+        };
+
+        fetchUsers();
+    }, []);
+
+    const deleteUser = async (userId) => {
+        try {
+            await deleteDoc(doc(db, 'users', userId));
+            setUsers(users.filter(user => user.id !== userId));
+            alert.success('User deleted successfully');
+        } catch (error) {
+            alert.success('Error deleting user');
+        }
+    };
+
+    const getUsersData = () => {
         const data = {
             columns: [
-                { label: 'User ID', field: 'id', sort: 'asc' },
                 { label: 'Name', field: 'name', sort: 'asc' },
                 { label: 'Email', field: 'email', sort: 'asc' },
-                { label: 'Role', field: 'role', sort: 'asc' },
+                { label: 'Phone Number', field: 'phoneNumber', sort: 'asc' },
+                { label: 'Address', field: 'address', sort: 'asc' },
                 { label: 'Actions', field: 'actions' },
             ],
             rows: []
@@ -25,17 +46,17 @@ const UsersList = () => {
 
         users.forEach(user => {
             data.rows.push({
-                id: user._id,
+                id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role,
+                phoneNumber: user.phoneNumber,
+                address: user.address,
                 actions: (
                     <Fragment>
-                        {/* Modify link to user details */}
-                        <Link to={`/admin/user/${user._id}`} className="btn btn-primary py-1 px-2">
+                        <Link to={`/admin/user/${user.id}`} className="btn btn-primary py-1 px-2">
                             <i className="fa fa-pencil"></i>
                         </Link>
-                        <button className="btn btn-danger py-1 px-2 ml-2" >
+                        <button className="btn btn-danger py-1 px-2 ml-2" onClick={() => deleteUser(user.id)}>
                             <i className="fa fa-trash"></i>
                         </button>
                     </Fragment>
@@ -48,37 +69,46 @@ const UsersList = () => {
 
     return (
         <Fragment>
-            <MetaData title={'All Users'} />
+            <MetaData title={'All Delivery'} />
             <div className="row">
                 <div className="col-12 col-md-2">
                     <Sidebar />
                 </div>
                 <div className="col-12 col-md-10">
                     <Fragment>
-                        <h1 className="my-5">All Users</h1>
-                        {/* Your loader or table component here */}
-                        <table className="table table-bordered table-hover">
-                            <thead className="thead-dark">
-                                <tr>
-                                    <th>User ID</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {setUsers().rows.map(user => (
-                                    <tr key={user.id}>
-                                        <td>{user.id}</td>
-                                        <td>{user.name}</td>
-                                        <td>{user.email}</td>
-                                        <td>{user.role}</td>
-                                        <td>{user.actions}</td>
+                        <h1 className="my-5">All Delivery Men</h1>
+                        {loading ? <Loader /> : (
+                            <table className="table table-bordered table-hover">
+                                <thead className="thead-dark">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone Number</th>
+                                        <th>Address</th>
+                                        <th>Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {getUsersData().rows.map(user => (
+                                        <tr key={user.id}>
+                                            <td>{user.name}</td>
+                                            <td>{user.email}</td>
+                                            <td>{user.phoneNumber}</td>
+
+                                            <td>{user.address}</td>
+                                            <td>
+                                                <Link to={`/admin/user/${user.id}`} className="btn btn-primary py-1 px-2">
+                                                    <i className="fa fa-pencil"></i>
+                                                </Link>
+                                                <button className="btn btn-danger py-1 px-2 ml-2" onClick={() => deleteUser(user.id)}>
+                                                    <i className="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </Fragment>
                 </div>
             </div>
