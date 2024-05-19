@@ -3,6 +3,7 @@ import React, { Fragment } from 'react'
 import { useParams } from 'react-router-dom';
 import MetaData from '../layout/metaData'
 import Sidebar from '../Admin/Sidebar';
+import {auth} from '../../firebase'
 const Home = () => {
 
     const { keyword } = useParams();
@@ -48,7 +49,7 @@ const Home = () => {
             <MetaData title={'Admin Home'} />
             <div className="row">
                 <div className="col-12 col-md-2">
-                    <Sidebar />
+                {auth.currentUser?<Sidebar /> : null}
                 </div>
                 <div className="col-12 col-md-10">
                     <h1 id="products_heading">Latest Products</h1>
