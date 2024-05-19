@@ -1,10 +1,9 @@
 import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
-import { getAuth } from 'firebase/auth';
+//import { getAnalytics } from 'firebase/analytics';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { getFirestore } from 'firebase/firestore';
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBg7EgyON3H58t9aueoRsHCiUKp-j9Jdf0",
     authDomain: "ar-furniture-789f5.firebaseapp.com",
@@ -18,9 +17,22 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+//const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 const db = getFirestore(app);
 
-export { app, auth, storage,db };
+// Google authentication
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
+export const signInWithGoogle = () => {
+    signInWithPopup(auth, provider)
+        .then((result) => {
+            console.log(result.user);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+};
+
+export { app, auth, storage, db, provider };

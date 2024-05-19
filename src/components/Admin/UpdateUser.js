@@ -8,21 +8,19 @@ import Sidebar from './Sidebar';
 
 const UpdateUser = () => {
     const { userId } = useParams();
-    const [user, setUser] = useState(null);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [address, setAddress] = useState('');
+    const navigate = useNavigate();
 
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 const userDoc = await getDoc(doc(db, 'users', userId));
                 if (userDoc.exists()) {
-                    setUser(userDoc.data());
                     setName(userDoc.data().name);
                     setEmail(userDoc.data().email);
                     setAddress(userDoc.data().address);
@@ -59,8 +57,12 @@ const UpdateUser = () => {
             alert(error.message);
         }
     };
-
+    if (loading) {
+        return <div>Loading...</div>;
+    }
     return (
+
+
         <Fragment>
             <MetaData title={'Add Delivery'} />
             <div className="row">

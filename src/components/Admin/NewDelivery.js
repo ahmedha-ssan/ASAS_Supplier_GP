@@ -1,11 +1,10 @@
 import React, { Fragment, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth, db } from '../../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import MetaData from '../layout/metaData';
 import Sidebar from './Sidebar';
-
 
 const NewDelivery = () => {
     const [name, setName] = useState('');
@@ -41,6 +40,10 @@ const NewDelivery = () => {
         }
 
         try {
+            const currentUser = auth.currentUser;
+            const currentEmail = currentUser.email;
+            const currentPassword = prompt("Please re-enter your password to continue:", "");
+
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
@@ -51,7 +54,10 @@ const NewDelivery = () => {
                 address,
                 usertype: "delivery"
             });
+
             await signOut(auth);
+            await signInWithEmailAndPassword(auth, currentEmail, currentPassword);
+
             setLoading(false);
             navigate('/admin/users'); // Redirect to delivery men list page on successful creation
         } catch (error) {
@@ -61,7 +67,6 @@ const NewDelivery = () => {
     };
 
 
-
     return (
         <Fragment>
             <MetaData title={'Add Delivery'} />
@@ -69,13 +74,11 @@ const NewDelivery = () => {
                 <div className="col-12 col-md-2">
                     <Sidebar />
                 </div>
-
                 <div className="col-12 col-md-10">
                     <Fragment>
                         <div className="wrapper my-5">
                             <form className="shadow-lg" onSubmit={handleFormSubmit} encType='multipart/form-data'>
                                 <h1 className="mb-4">Add Delivery Man</h1>
-
                                 <div className="form-group">
                                     <label htmlFor="name_field">Name</label>
                                     <input
@@ -87,9 +90,6 @@ const NewDelivery = () => {
                                         required
                                     />
                                 </div>
-
-
-
                                 <div className="form-group">
                                     <label htmlFor="phone_number_field">Phone Number</label>
                                     <input
@@ -101,7 +101,6 @@ const NewDelivery = () => {
                                         required
                                     />
                                 </div>
-
                                 <div className="form-group">
                                     <label htmlFor="email_field">Email</label>
                                     <input
@@ -113,9 +112,6 @@ const NewDelivery = () => {
                                         required
                                     />
                                 </div>
-
-
-
                                 <div className="form-group">
                                     <label htmlFor="address_field">Address</label>
                                     <input
@@ -127,7 +123,6 @@ const NewDelivery = () => {
                                         required
                                     />
                                 </div>
-
                                 <div className="form-group">
                                     <label htmlFor="password_field">Password</label>
                                     <input
@@ -140,7 +135,7 @@ const NewDelivery = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="password_field">Confirm Password</label>
+                                    <label htmlFor="confirmpassword_field">Confirm Password</label>
                                     <input
                                         type="password"
                                         id="confirmpassword_field"
@@ -164,7 +159,7 @@ const NewDelivery = () => {
                 </div>
             </div>
         </Fragment>
-    )
+    );
 }
 
 export default NewDelivery;

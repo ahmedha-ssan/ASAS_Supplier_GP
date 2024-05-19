@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
+import { auth } from './firebase'
 
 import Login from './components/Admin/Login'
 import Register from './components/Admin/Register'
@@ -17,34 +18,82 @@ import OrdersList from './components/Admin/OrderList';
 import UsersList from './components/Admin/UsersList';
 import ForgotPassword from './components/Admin/ForgotPassword'
 import UpdateUser from './components/Admin/UpdateUser';
+import Profile from './components/Admin/Profile';
+import UpdateProfile from './components/Admin/UpdateProfile'
 
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Function to handle logout
+  const handleLogout = () => {
+    auth.signOut();
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <Router>
       <div className="App">
-        <Header />
+        <Header isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
         <div className="container container-fluid">
           <Routes>
 
           </Routes>
         </div>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin/products" element={<ProductList />} />
-          <Route path="/admin/addproducts" element={<NewProduct />} />
-          <Route path="/admin/adddelivery" element={<NewDelivery />} />
-          <Route path="/admin/orders" element={<OrdersList />} />
-          <Route path="/admin/users" element={<UsersList />} />
+          {/* Public routes accessible to anyone */}
+          {isLoggedIn ? (
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+          ) : (
+            <Route path="/" element={<Home />} />
+          )}
+          {isLoggedIn ? (
+            <Route path="/Login" element={<Navigate to="/dashboard" />} />
+          ) : (
+            <Route path="/Login" element={<Login />} />
+          )}
+          {isLoggedIn ? (
+            <Route path="/Register" element={<Navigate to="/dashboard" />} />
+          ) : (
+            <Route path="/Register" element={<Register />} />
+          )}
+          {isLoggedIn ? (
+            <Route path="/password/forgot" element={<Navigate to="/dashboard" />} />
+          ) : (
+            <Route path="/password/forgot" element={<ForgotPassword />} />
+          )}
+          {/*  */}
+          {/* Private routes accessible only if logged in */}
+          {isLoggedIn && (
+            <>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/admin/products" element={<ProductList />} />
+              <Route path="/admin/addproducts" element={<NewProduct />} />
+              <Route path="/admin/adddelivery" element={<NewDelivery />} />
+              <Route path="/admin/orders" element={<OrdersList />} />
+              <Route path="/admin/users" element={<UsersList />} />
+              <Route path="/admin/user/:userId" element={<UpdateUser />} />
+              <Route path="/me" element={<Profile />} />
+              <Route path="/me/update" element={<UpdateProfile />} />
 
-          <Route path="/Login" element={<Login />} />
-          <Route path="/Register" element={<Register />} />
-          <Route path="/password/forgot" element={<ForgotPassword />} />
-
-          <Route path="/admin/user/:userId" element={<UpdateUser />} /> // Add route for UpdateUser component
-
-
+            </>
+          )}
         </Routes>
         <Footer />
       </div>

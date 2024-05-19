@@ -1,11 +1,28 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
 import Sidebar from './Sidebar'
+import { collection, getDocs, where, query } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const Dashboard = () => {
+    const [userCount, setUserCount] = useState(0);
+    useEffect(() => {
+        const fetchUserCount = async () => {
+            try {
+                const q = query(collection(db, 'users'), where('usertype', '==', 'delivery'));
+                const querySnapshot = await getDocs(q);
+                setUserCount(querySnapshot.size);
+            } catch (error) {
+                console.error('Error fetching user count:', error);
+            }
+        };
+        fetchUserCount();
+    }, []);
+
     return (
         <Fragment>
             <div className="row">
+
                 <div className="col-12 col-md-2">
                     <Sidebar />
                 </div>
@@ -56,7 +73,7 @@ const Dashboard = () => {
                         <div className="col-xl-3 col-sm-6 mb-3">
                             <div className="card text-white bg-info o-hidden h-100">
                                 <div className="card-body">
-                                    <div className="text-center card-font-size">Users<br /> <b>45</b></div>
+                                    <div className="text-center card-font-size">Delivery Men<br /> <b>{userCount}</b></div>
                                 </div>
                                 <Link className="card-footer text-white clearfix small z-1" to="/admin/users">
                                     <span className="float-left">View Details</span>

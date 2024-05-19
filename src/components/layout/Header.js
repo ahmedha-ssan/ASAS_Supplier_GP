@@ -1,15 +1,18 @@
 import React, { Fragment, useState, useEffect } from 'react'
-import { Link, Route } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { auth, db } from '../../firebase';
-import { collection, getDoc, getDocs, addDoc, doc } from "firebase/firestore";
+import { getDoc, doc } from "firebase/firestore";
 
 const Header = () => {
     const [user, setUser] = useState(null);
+    const [userName, setUserName] = useState('');
+    const [userImage, setUserImage] = useState('');
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
             if (user) {
                 setUser(user);
+                fetchUserData(user.uid);
             } else {
                 setUser(null);
             }
@@ -17,18 +20,17 @@ const Header = () => {
         return () => unsubscribe();
     }, []);
 
-    const fetchUserName = async () => {
+
+    const fetchUserData = async (userId) => {
         try {
-            const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+            const userDoc = await getDoc(doc(db, 'users', userId));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
-                console.log(userData.name);
-                return userData.name;
+                setUserName(userData.name);
+                setUserImage(userData.avatar || '/images/supplier.png');
             }
-            return null;
         } catch (error) {
-            console.error('Error fetching user name:', error);
-            return null;
+            console.error('Error fetching user data:', error);
         }
     };
 
@@ -40,36 +42,29 @@ const Header = () => {
             alert('Error logging out.');
         }
     };
-    useEffect(() => {
-        if (user) {
-            fetchUserName(user.uid).then((name) => {
-                setUser({ ...user, name });
-            });
-        }
-    }, [user]);
+
+
     return (
         <Fragment>
             <nav className="navbar row">
                 <div className="col-12 col-md-3">
                     <div className="navbar-brand">
                         <Link to="/">
-                            <img src="/images/shopit_logo.png" alt="ShopIT Logo" />
+                            <img src="/images/hs.png" alt="ASAS Logo" />
                         </Link>
                     </div>
                 </div>
 
-
                 <div className="col-12 col-md-3 mt-4 mt-md-0 text-center">
-
-
                     {user ? (
                         <div className="ml-4 dropdown d-inline">
                             <Link to="#!" className="btn dropdown-toggle text-white mr-4" type="button" id="dropDownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span>{user.name || user.name}</span>
+                                <span>{userName}</span>
+                                {userImage && <img className="ml-2 rounded-circle" src={userImage} alt="User Profile" style={{ width: '30px', height: '30px' }} />}
                             </Link>
 
                             <div className="dropdown-menu" aria-labelledby="dropDownMenuButton">
-
+                                <Link className="dropdown-item" to="/me">Profile</Link>
                                 <button className="dropdown-item text-danger" onClick={logoutHandler}>
                                     Logout
                                 </button>

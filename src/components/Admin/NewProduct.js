@@ -1,10 +1,11 @@
-import React, { Fragment , useState } from 'react'
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { Fragment, useState } from 'react'
 import MetaData from '../layout/metaData';
 import { ProgressBar } from 'react-bootstrap';
 import Sidebar from './Sidebar'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { getDatabase, ref as rtdbRef, push } from 'firebase/database';
-import {app} from '../../firebase.js';
+import { app } from '../../firebase.js';
 
 const storage = getStorage(app);
 const database = getDatabase(app);
@@ -15,15 +16,17 @@ const NewProduct = () => {
     const [selectedModel, setSelectedModel] = useState(null);
     const [uploadStatus, setUploadStatus] = useState("select");
     const [downloadImageURLs, setDownloadImageURLs] = useState([]);
+    // eslint-disable-next-line
     const [downloadModelURL, setDownloadModelURL] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
+    // eslint-disable-next-line
     const [totalUploadProgress, setTotalUploadProgress] = useState(0);
 
     const handleImageChange = (e) => {
         const files = e.target.files;
         const newImages = Array.from(files);
         setImages([...images, ...newImages]);
-        
+
         const previewFiles = newImages.map((file) => URL.createObjectURL(file));
         setPreviewImages([...previewImages, ...previewFiles]);
     };
@@ -138,14 +141,14 @@ const NewProduct = () => {
                     <Fragment>
                         <div className="wrapper my-5">
                             <form className="shadow-lg">
-                            {uploadStatus === "uploading" && (
-                                <ProgressBar
-                                    animated
-                                    now={100}
-                                    className=""
-                                    style={{ width: '100%', borderRadius: '4px' }}
-                                />
-                            )}
+                                {uploadStatus === "uploading" && (
+                                    <ProgressBar
+                                        animated
+                                        now={100}
+                                        className=""
+                                        style={{ width: '100%', borderRadius: '4px' }}
+                                    />
+                                )}
                                 <h1 className="mb-4">New Product</h1>
 
                                 <div className="form-group">
@@ -248,9 +251,13 @@ const NewProduct = () => {
                                             Choose Images
                                         </label>
 
-                                        <div className="uploaded-images" style={{margin:'10px'}}>
+                                        <div className="uploaded-images" style={{ margin: '10px' }}>
                                             {previewImages.map((previewUrl, index) => (
-                                                <img key={index} src={previewUrl} className="img-fluid"  style={{ width: '100px', height: 'auto', margin:'5px' ,borderRadius:'5px'}} alt={`Image ${index + 1}`}  onClick={() => handleImageRemove(index)} />
+                                                //old 
+                                                //     <img key={index} src={previewUrl} className="img-fluid" style={{ width: '100px', height: 'auto', margin: '5px', borderRadius: '5px' }} alt={`Image ${index + 1}`} onClick={() => handleImageRemove(index)} />
+                                                //
+                                                <img key={index} src={previewUrl} className="img-fluid" style={{ width: '100px', height: 'auto', margin: '5px', borderRadius: '5px' }} alt={`Preview ${index + 1}`} onClick={() => handleImageRemove(index)} />
+
                                             ))}
                                         </div>
                                     </div>
