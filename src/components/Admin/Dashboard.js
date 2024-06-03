@@ -2,26 +2,46 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import { collection, getDocs, where, query } from 'firebase/firestore';
+import { getDatabase, ref, onValue } from 'firebase/database';
+
 import { db, auth } from '../../firebase';
 
 const Dashboard = () => {
     const [userCount, setUserCount] = useState(0);
+    const [productCount, setProductCount] = useState(0);
 
     useEffect(() => {
-        const fetchUserCount = async () => {
+        const fetchCounts = async () => {
             try {
                 const currentUser = auth.currentUser;
                 const supplierId = currentUser.uid;
-
-                const q = query(collection(db, 'users'), where('usertype', '==', 'delivery'), where('supplierId', '==', supplierId));
-                const querySnapshot = await getDocs(q);
+                // Fetch delivery men count
+                const deliveryQuery = query(collection(db, 'users'), where('usertype', '==', 'delivery'), where('supplierId', '==', supplierId));
+                const querySnapshot = await getDocs(deliveryQuery);
                 setUserCount(querySnapshot.size);
+
+                // Fetch products count
+                const dzb = getDatabase();
+                const productsRef = ref(dzb, 'products');
+                onValue(productsRef, (snapshot) => {
+                    let count = 0;
+                    snapshot.forEach((childSnapshot) => {
+                        const product = childSnapshot.val();
+                        if (product.userId === supplierId) {
+                            count++;
+                        }
+                    });
+                    setProductCount(count);
+                });
+                console.log(productCount);
+
             } catch (error) {
                 console.error('Error fetching user count:', error);
             }
         };
 
-        fetchUserCount();
+        fetchCounts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (
         <Fragment>
@@ -47,7 +67,7 @@ const Dashboard = () => {
                         <div className="col-xl-3 col-sm-6 mb-3">
                             <div className="card text-white bg-success o-hidden h-100">
                                 <div className="card-body">
-                                    <div className="text-center card-font-size">Products<br /> <b>56</b></div>
+                                    <div className="text-center card-font-size">Products<br /> <b>{productCount}</b></div>
                                 </div>
                                 <Link className="card-footer text-white clearfix small z-1" to="/admin/products">
                                     <span className="float-left">View Details</span>

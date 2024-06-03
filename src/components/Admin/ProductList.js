@@ -1,19 +1,49 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import MetaData from '../layout/metaData';
 import Sidebar from './Sidebar'
+import { getDatabase, ref as rtdbRef, onValue, remove } from 'firebase/database';
+import { app } from '../../firebase.js';
+import { getAuth } from 'firebase/auth';
+
+const database = getDatabase(app);
+const auth = getAuth(app);
+
 const ProductsList = () => {
+    const [products, setProducts] = useState([]);
+    // eslint-disable-next-line no-unused-vars
+    const [userId, setUserId] = useState(null);
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            if (user) {
+                setUserId(user.uid);
+
+                const productsRef = rtdbRef(database, 'products');
+                onValue(productsRef, (snapshot) => {
+                    const productsData = snapshot.val();
+                    const productsList = [];
+                    for (let id in productsData) {
+                        if (productsData[id].userId === user.uid) {
+                            productsList.push({ _id: id, ...productsData[id] });
+                        }
+                    }
+                    setProducts(productsList);
+                });
+            } else {
+                setUserId(null);
+                setProducts([]);
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
 
 
-    const products = [
-        { _id: 1, name: 'Dummy Product 1', price: 10, stock: 50 },
-        { _id: 2, name: 'Dummy Product 2', price: 20, stock: 30 },
-        { _id: 3, name: 'Dummy Product 3', price: 15, stock: 20 },
-    ];
     const deleteProductHandler = (id) => {
-        // Implement delete functionality here if needed
+        const productRef = rtdbRef(database, `products/${id}`);
+        remove(productRef);
     };
-
     return (
         <Fragment>
             <MetaData title={'All Products'} />
@@ -39,7 +69,7 @@ const ProductsList = () => {
                                 {products.map(product => (
                                     <tr key={product._id}>
                                         <td>{product._id}</td>
-                                        <td>{product.name}</td>
+                                        <td>{product.productName}</td>
                                         <td>{product.price}</td>
                                         <td>{product.stock}</td>
                                         <td>

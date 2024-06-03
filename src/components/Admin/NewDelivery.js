@@ -33,7 +33,7 @@ const NewDelivery = () => {
 
                 const deliveryMenQuery = query(collection(db, 'users'), where('usertype', '==', 'delivery'), where('supplierId', '==', supplierId));
                 const querySnapshot = await getDocs(deliveryMenQuery);
-
+  
                 const deliveryMenData = [];
                 querySnapshot.forEach((doc) => {
                     deliveryMenData.push({ id: doc.id, ...doc.data() });
