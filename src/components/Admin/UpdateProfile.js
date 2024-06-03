@@ -21,7 +21,7 @@ const UpdateProfile = ({ history }) => {
             try {
                 const currentUser = auth.currentUser;
                 if (currentUser) {
-                    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                    const userDoc = await getDoc(doc(db, 'supplier', currentUser.uid));
                     if (userDoc.exists()) {
                         setName(userDoc.data().name);
                         setEmail(userDoc.data().email);
@@ -47,7 +47,7 @@ const UpdateProfile = ({ history }) => {
         try {
             const currentUser = auth.currentUser;
             if (currentUser) {
-                await updateDoc(doc(db, 'users', currentUser.uid), {
+                await updateDoc(doc(db, 'supplier', currentUser.uid), {
                     name,
                     email,
                     phonenumber,

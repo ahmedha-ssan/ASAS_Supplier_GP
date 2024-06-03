@@ -16,7 +16,7 @@ const Profile = () => {
         const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
             if (currentUser) {
                 try {
-                    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                    const userDoc = await getDoc(doc(db, 'supplier', currentUser.uid));
                     if (userDoc.exists()) {
                         const userData = userDoc.data();
                         setUser({ ...currentUser, ...userData }); // Merge currentUser with userData

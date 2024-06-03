@@ -2,23 +2,27 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import { collection, getDocs, where, query } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db, auth } from '../../firebase';
 
 const Dashboard = () => {
     const [userCount, setUserCount] = useState(0);
+
     useEffect(() => {
         const fetchUserCount = async () => {
             try {
-                const q = query(collection(db, 'users'), where('usertype', '==', 'delivery'));
+                const currentUser = auth.currentUser;
+                const supplierId = currentUser.uid;
+
+                const q = query(collection(db, 'users'), where('usertype', '==', 'delivery'), where('supplierId', '==', supplierId));
                 const querySnapshot = await getDocs(q);
                 setUserCount(querySnapshot.size);
             } catch (error) {
                 console.error('Error fetching user count:', error);
             }
         };
+
         fetchUserCount();
     }, []);
-
     return (
         <Fragment>
             <div className="row">

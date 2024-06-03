@@ -40,23 +40,17 @@ const Login = () => {
         try {
             const { user } = await signInWithEmailAndPassword(auth, email, password);
             setLoading(false);
-
+            auth.signOut();
             // Fetch user data from Firestore
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            const userDoc = await getDoc(doc(db, 'supplier', user.uid));
             if (userDoc.exists()) {
-                const userData = userDoc.data();
+                // eslint-disable-next-line no-unused-vars
+                const { user } = await signInWithEmailAndPassword(auth, email, password);
 
-                if (userData.usertype === 'supplier') {
-                    navigate('/');
-                } else {
-                    setLoading(false);
-                    alert('Only suppliers are allowed to sign in');
-                    await auth.signOut();
-                }
+                navigate('/');
             } else {
                 setLoading(false);
                 alert('User data not found');
-                await auth.signOut();
             }
         } catch (error) {
             setLoading(false);
@@ -69,7 +63,7 @@ const Login = () => {
             setLoading(false);
 
             // Fetch user data from Firestore
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            const userDoc = await getDoc(doc(db, 'supplier', user.uid));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
                 if (userData.usertype === 'supplier') {

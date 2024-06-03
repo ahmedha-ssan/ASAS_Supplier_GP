@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { collection, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db, auth } from '../../firebase';
 import Sidebar from './Sidebar';
 import MetaData from '../layout/metaData';
 import Loader from '../layout/Loader';
@@ -12,11 +12,19 @@ const UsersList = () => {
 
     useEffect(() => {
         const fetchUsers = async () => {
-            const usersCollection = collection(db, 'users');
-            const usersSnapshot = await getDocs(query(usersCollection, where('usertype', '==', 'delivery')));
-            const usersList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setUsers(usersList);
-            setLoading(false);
+            try {
+                const currentUser = auth.currentUser;
+                const supplierId = currentUser.uid;
+
+                const usersCollection = collection(db, 'users');
+                const usersSnapshot = await getDocs(query(usersCollection, where('usertype', '==', 'delivery'), where('supplierId', '==', supplierId)));
+                const usersList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setUsers(usersList);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                setLoading(false);
+            }
         };
 
         fetchUsers();
@@ -94,7 +102,6 @@ const UsersList = () => {
                                             <td>{user.name}</td>
                                             <td>{user.email}</td>
                                             <td>{user.phoneNumber}</td>
-
                                             <td>{user.address}</td>
                                             <td>
                                                 <Link to={`/admin/user/${user.id}`} className="btn btn-primary py-1 px-2">

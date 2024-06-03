@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth, db } from '../../firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import MetaData from '../layout/metaData';
 import Sidebar from './Sidebar';
 
@@ -14,14 +14,40 @@ const NewDelivery = () => {
     const [password, setPassword] = useState('');
     const [confirmpassword, setconfirmpassword] = useState('');
     const [loading, setLoading] = useState(false);
-
-
+    // eslint-disable-next-line no-unused-vars
+    const [supplierId, setSupplierId] = useState('');
+    // eslint-disable-next-line no-unused-vars
+    const [deliveryMen, setDeliveryMen] = useState([]);
     const navigate = useNavigate();
 
     const validatePhoneNumber = (phone) => {
         const phoneRegex = /^\d{11}$/;
         return phoneRegex.test(phone);
     };
+
+    useEffect(() => {
+        const fetchDeliveryMen = async () => {
+            try {
+                const currentUser = auth.currentUser;
+                const supplierId = currentUser.uid;
+
+                const deliveryMenQuery = query(collection(db, 'users'), where('usertype', '==', 'delivery'), where('supplierId', '==', supplierId));
+                const querySnapshot = await getDocs(deliveryMenQuery);
+
+                const deliveryMenData = [];
+                querySnapshot.forEach((doc) => {
+                    deliveryMenData.push({ id: doc.id, ...doc.data() });
+                });
+
+                setDeliveryMen(deliveryMenData);
+            } catch (error) {
+                console.error('Error fetching delivery men:', error);
+            }
+        };
+
+        fetchDeliveryMen();
+    }, []);
+
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
@@ -52,14 +78,16 @@ const NewDelivery = () => {
                 phoneNumber,
                 email,
                 address,
-                usertype: "delivery"
+                usertype: "delivery",
+                supplierId: currentUser.uid
             });
 
             await signOut(auth);
             await signInWithEmailAndPassword(auth, currentEmail, currentPassword);
 
             setLoading(false);
-            navigate('/admin/users'); // Redirect to delivery men list page on successful creation
+            navigate('/admin/users');
+
         } catch (error) {
             setLoading(false);
             alert(error.message); // Handle error appropriately in your application

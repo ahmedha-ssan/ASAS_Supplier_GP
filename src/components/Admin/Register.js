@@ -71,7 +71,7 @@ const Register = () => {
             return;
         }
         try {
-            const userRef = doc(db, 'users', email);
+            const userRef = doc(db, 'supplier', email);
             const userDoc = await getDoc(userRef);
             if (userDoc.exists()) {
                 setLoading(false);
@@ -81,7 +81,7 @@ const Register = () => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            await setDoc(doc(db, 'users', user.uid), {
+            await setDoc(doc(db, 'supplier', user.uid), {
                 name,
                 email,
                 phonenumber,

@@ -23,7 +23,7 @@ const Header = () => {
 
     const fetchUserData = async (userId) => {
         try {
-            const userDoc = await getDoc(doc(db, 'users', userId));
+            const userDoc = await getDoc(doc(db, 'supplier', userId));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
                 setUserName(userData.name);
