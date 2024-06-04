@@ -1,44 +1,48 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { Fragment } from 'react'
+import React, { Fragment, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import MetaData from '../layout/metaData'
+import MetaData from '../layout/metaData';
 import Sidebar from '../Admin/Sidebar';
-import { auth } from '../../firebase'
+import { getDatabase, ref, onValue } from 'firebase/database';
+import { auth } from '../../firebase';
+
 
 const Home = () => {
-
     const { keyword } = useParams();
+    const [user, setUser] = useState(null);
+    const [products, setProducts] = useState([]);
+    useEffect(() => {
+        // Get the current authenticated user
+        const unsubscribe = auth.onAuthStateChanged(currentUser => {
+            setUser(currentUser);
+        });
 
-    const products = [
-        {
-            id: 1,
-            title: 'HP N4000',
-            description: 'Description of product 1',
-            price: 19.99,
-            imageUrl: '',
-        }, {
-            id: 1,
-            title: 'HP N4000',
-            description: 'Description of product 1',
-            price: 19.99,
-            imageUrl: '',
-        }, {
-            id: 1,
-            title: 'HP N4000',
-            description: 'Description of product 1',
-            price: 19.99,
-            imageUrl: '',
-        },
-        {
-            id: 2,
-            title: 'SanDisk 128GB',
-            description: 'Description of product 1',
-            price: 19.99,
-            imageUrl: '',
-        },
-    ];
+        return () => unsubscribe();
+    }, []);
+    useEffect(() => {
+        if (!user) return;
 
+        const database = getDatabase();
+        const productsRef = ref(database, 'products');
 
+        const fetchProducts = () => {
+            onValue(productsRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const productsArray = Object.entries(data).map(([id, product]) => ({
+                        id,
+                        ...product
+                    }));
+
+                    // Filter products by current user's ID
+                    const userProducts = productsArray.filter(product => product.userId === user.uid);
+                    setProducts(userProducts);
+                }
+            });
+        };
+
+        fetchProducts();
+    }, [user]);
     const filteredProducts = keyword
         ? products.filter(product => product.title.toLowerCase().includes(keyword.toLowerCase()))
         : products;
@@ -57,30 +61,58 @@ const Home = () => {
                     <section id="products" className="container mt-5">
                         <div className="row">
                             {filteredProducts.map(product => (
-                                <div key={product.id} className="col-sm-12 col-md-6 col-lg-4 my-3">
-                                    <div className="card p-3 rounded">
-                                        <img className="card-img-top mx-auto" src={product.imageUrl} alt='' />
-                                        <div className="card-body d-flex flex-column">
-                                            <small className="card-title">
-                                                <a href="#">{product.id}</a>
-                                            </small>
-                                            <h5 className="card-title">
-                                                <a href="#">{product.title}</a>
-                                            </h5>
-                                            <h5 className="card-title">
-                                                <a href="#">{product.description}</a>
-                                            </h5>
-                                            <p className="card-text">${product.price.toFixed(2)}</p>
-                                            <a href="#" id="view_btn" className="btn btn-block">View Details</a>
-                                        </div>
-                                    </div>
-                                </div>
+                                <ProductCard key={product.id} product={product} />
                             ))}
                         </div>
                     </section>
                 </div>
             </div>
         </Fragment>
+    );
+};
+
+const ProductCard = ({ product }) => {
+    const [mainImage, setMainImage] = useState(product.images ? product.images[0] : 'placeholder.jpg');
+
+    const handleThumbnailClick = (imageUrl) => {
+        setMainImage(imageUrl);
+    };
+
+    return (
+        <div className="col-sm-12 col-md-6 col-lg-4 my-3">
+            <div className="card p-3 rounded">
+                <img className="card-img-top mx-auto" src={mainImage} alt='' />
+                <div className="thumbnail-images">
+                    {product.images && product.images.map((imageUrl, index) => (
+                        <img
+                            key={index}
+                            src={imageUrl}
+                            className="thumbnail"
+                            alt={`Thumbnail ${index + 1}`}
+                            onClick={() => handleThumbnailClick(imageUrl)}
+                        />
+                    ))}
+                </div>
+                <div className="card-body d-flex flex-column">
+                    <small className="card-title">
+                        <a href={`/product/${product.id}`}>{product.id}</a>
+                    </small>
+                    <h5 className="card-title">
+                        Name: <a href={`/product/${product.id}`}>{product.productName}</a>
+                    </h5>
+                    <h5 className="card-title">
+                        EGP: <a href={`/product/${product.id}`}>{product.price}</a>
+                    </h5>
+                    <div class="ratings mt-auto">
+                        <div class="rating-outer">
+                            <div class="rating-inner"></div>
+                        </div>
+                        <span id="no_of_reviews">(5 Reviews)</span>
+                    </div>
+                    <a href={`/product/${product.id}`} id="view_btn" className="btn btn-block">View Details</a>
+                </div>
+            </div>
+        </div>
     );
 };
 

@@ -20,7 +20,7 @@ import ForgotPassword from './components/Admin/ForgotPassword'
 import UpdateUser from './components/Admin/UpdateUser';
 import Profile from './components/Admin/Profile';
 import UpdateProfile from './components/Admin/UpdateProfile'
-
+import ProductCard from './components/Admin/ProductCard';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -84,6 +84,9 @@ function App() {
             <>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/home" element={<Home />} />
+
+              <Route path="/Product/:id" element={<ProductCard />} />
+
               <Route path="/admin/products" element={<ProductList />} />
               <Route path="/admin/addproducts" element={<NewProduct />} />
               <Route path="/admin/adddelivery" element={<NewDelivery />} />
