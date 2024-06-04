@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState } from 'react';
 import MetaData from '../layout/metaData';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import { ProgressBar } from 'react-bootstrap';
-import Sidebar from './Sidebar'
+import Sidebar from './Sidebar';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { getDatabase, ref as rtdbRef, push, set } from 'firebase/database';
 import { app } from '../../firebase.js';
@@ -15,19 +15,10 @@ const auth = getAuth(app);
 
 const NewProduct = () => {
     const [images, setImages] = useState([]);
-    const [previewModel, setPreviewModel] = useState(null); // State for previewing 3D model
-
     const [previewImages, setPreviewImages] = useState([]);
     const [selectedModel, setSelectedModel] = useState(null);
-    const [uploadStatus, setUploadStatus] = useState("select");
-    // eslint-disable-next-line no-unused-vars
-    const [downloadImageURLs, setDownloadImageURLs] = useState([]);
-    // eslint-disable-next-line
-    const [downloadModelURL, setDownloadModelURL] = useState(null);
+    const [previewModel, setPreviewModel] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
-    // eslint-disable-next-line
-    const [totalUploadProgress, setTotalUploadProgress] = useState(0);
-
     const [productName, setProductName] = useState("");
     const [price, setPrice] = useState("");
     const [material, setMaterial] = useState("");
@@ -39,30 +30,26 @@ const NewProduct = () => {
     const [stock, setStock] = useState("");
     const [seller, setSeller] = useState("");
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false); // Initialize loading state
+    const [loading, setLoading] = useState(false);// Initialize loading state
 
     const handleImageChange = (e) => {
-        const files = e.target.files;
-        const newImages = Array.from(files);
-        setImages([...images, ...newImages]);
-        const previewFiles = newImages.map((file) => URL.createObjectURL(file));
+        const files = Array.from(e.target.files);
+        setImages([...images, ...files]);
+        const previewFiles = files.map((file) => URL.createObjectURL(file));
         setPreviewImages([...previewImages, ...previewFiles]);
     };
 
     const handleImageRemove = (index) => {
-        const newImages = [...images];
-        newImages.splice(index, 1);
+        const newImages = images.filter((_, i) => i !== index);
         setImages(newImages);
-        const newPreviewImages = [...previewImages];
-        newPreviewImages.splice(index, 1);
+        const newPreviewImages = previewImages.filter((_, i) => i !== index);
         setPreviewImages(newPreviewImages);
     };
 
     const handleModelChange = (event) => {
         if (event.target.files && event.target.files.length > 0) {
             setSelectedModel(event.target.files[0]);
-            setPreviewModel(URL.createObjectURL(event.target.files[0])); // Set preview for 3D model
-
+            setPreviewModel(URL.createObjectURL(event.target.files[0]));
         }
     };
 
@@ -72,8 +59,7 @@ const NewProduct = () => {
             const user = auth.currentUser;
             if (user) {
                 const userId = user.uid;
-                setUploadStatus("uploading");
-                setTotalUploadProgress(0);
+                setUploadProgress(0);
 
                 const uploadImagePromises = images.map((file) => {
                     const storageRef = ref(storage, 'your-images-folder/' + file.name);
@@ -84,9 +70,7 @@ const NewProduct = () => {
                             'state_changed',
                             (snapshot) => {
                                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                setUploadProgress(progress);
-                                const totalProgress = ((progress + modelUploadProgress) / 2);
-                                setTotalUploadProgress(totalProgress);
+                                setUploadProgress((prev) => prev + progress / images.length);
                             },
                             reject,
                             async () => {
@@ -97,25 +81,25 @@ const NewProduct = () => {
                     });
                 });
 
+
                 const modelStorageRef = ref(storage, 'your-3d-models-folder/' + selectedModel.name);
                 const modelUploadTask = uploadBytesResumable(modelStorageRef, selectedModel);
-                let modelUploadProgress = 0;
+
 
                 modelUploadTask.on(
                     'state_changed',
                     (snapshot) => {
-                        modelUploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        setUploadProgress(modelUploadProgress);
-                        const totalProgress = ((uploadProgress + modelUploadProgress) / 2);
-                        setTotalUploadProgress(totalProgress);
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        setUploadProgress((prev) => prev + progress / 2);
                     },
                     (error) => {
                         console.error(error);
-                        setUploadStatus("select");
+                        setLoading(false);
                     },
                     async () => {
                         const modelDownloadURL = await getDownloadURL(modelUploadTask.snapshot.ref);
-                        setDownloadModelURL(modelDownloadURL);
+
+                        const downloadImageURLs = await Promise.all(uploadImagePromises);
 
                         // Save product data to Firebase Realtime Database
                         const productsRef = rtdbRef(database, 'products');
@@ -136,33 +120,19 @@ const NewProduct = () => {
                             userId // store the user ID with the product
                         });
 
-                        // Clear inputs after successful upload
                         clearInputs();
-                        setUploadStatus("done");
+                        navigate('/admin/products');
                     }
                 );
-
-                try {
-                    const downloadImageURLs = await Promise.all(uploadImagePromises);
-                    setDownloadImageURLs(downloadImageURLs);
-                    setTotalUploadProgress(100);
-                    navigate.push("/admin/products");
-                } catch (error) {
-                    console.error(error);
-                    setUploadStatus("select");
-                } finally {
-                    setLoading(false); // Set loading to false after upload is completed
-                }
             }
         }
     };
+
 
     const clearInputs = () => {
         setImages([]);
         setPreviewImages([]);
         setSelectedModel(null);
-        setDownloadImageURLs([]);
-        setDownloadModelURL(null);
         setProductName("");
         setPrice("");
         setMaterial("");
@@ -173,8 +143,9 @@ const NewProduct = () => {
         setCategory("Electronics");
         setStock("");
         setSeller("");
-        setPreviewModel(null); // Clear 3D model preview
-
+        setPreviewModel(null);
+        setLoading(false);
+        setUploadProgress(0);
     };
 
 
@@ -190,10 +161,10 @@ const NewProduct = () => {
                     <Fragment>
                         <div className="wrapper my-5">
                             <form className="shadow-lg">
-                                {uploadStatus === "uploading" && (
+                                {loading && (
                                     <ProgressBar
                                         animated
-                                        now={100}
+                                        now={uploadProgress}
                                         className=""
                                         style={{ width: '100%', borderRadius: '4px' }}
                                     />
@@ -333,7 +304,14 @@ const NewProduct = () => {
 
                                         <div className="uploaded-images" style={{ margin: '10px' }}>
                                             {previewImages.map((previewUrl, index) => (
-                                                <img key={index} src={previewUrl} className="img-fluid" style={{ width: '100px', height: 'auto', margin: '5px', borderRadius: '5px' }} alt={`Preview ${index + 1}`} onClick={() => handleImageRemove(index)} />
+                                                <img
+                                                    key={index}
+                                                    src={previewUrl}
+                                                    className="img-fluid"
+                                                    style={{ width: '100px', height: 'auto', margin: '5px', borderRadius: '5px' }}
+                                                    alt={`Preview ${index + 1}`}
+                                                    onClick={() => handleImageRemove(index)}
+                                                />
                                             ))}
                                         </div>
                                     </div>
@@ -347,7 +325,7 @@ const NewProduct = () => {
                                             name='product_images'
                                             className='custom-file-input'
                                             id='customModelFile'
-                                            accept=".glb"
+                                            // accept=".glb"
                                             onChange={handleModelChange}
                                             required
                                         />

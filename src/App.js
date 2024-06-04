@@ -59,7 +59,7 @@ function App() {
         <Routes>
           {/* Public routes accessible to anyone */}
           {isLoggedIn ? (
-            <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="/" element={<Navigate to="/Home" />} />
           ) : (
             <Route path="/" element={<Home />} />
           )}
@@ -83,6 +83,7 @@ function App() {
           {isLoggedIn && (
             <>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/admin/products" element={<ProductList />} />
               <Route path="/admin/addproducts" element={<NewProduct />} />
               <Route path="/admin/adddelivery" element={<NewDelivery />} />
