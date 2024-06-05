@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } f
 import { auth, db } from '../../firebase';
 import { doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import MetaData from '../layout/metaData';
-import Sidebar from './Sidebar';
+import Sidebar from '../layout/Sidebar';
 
 const NewDelivery = () => {
     const [name, setName] = useState('');
@@ -33,7 +33,7 @@ const NewDelivery = () => {
 
                 const deliveryMenQuery = query(collection(db, 'users'), where('usertype', '==', 'delivery'), where('supplierId', '==', supplierId));
                 const querySnapshot = await getDocs(deliveryMenQuery);
-  
+
                 const deliveryMenData = [];
                 querySnapshot.forEach((doc) => {
                     deliveryMenData.push({ id: doc.id, ...doc.data() });

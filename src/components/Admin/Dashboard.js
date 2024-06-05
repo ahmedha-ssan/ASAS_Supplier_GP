@@ -1,39 +1,42 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
-import Sidebar from './Sidebar'
+import Sidebar from '../layout/Sidebar'
 import { collection, getDocs, where, query } from 'firebase/firestore';
 import { getDatabase, ref, onValue } from 'firebase/database';
-
 import { db, auth } from '../../firebase';
 
 const Dashboard = () => {
     const [userCount, setUserCount] = useState(0);
     const [productCount, setProductCount] = useState(0);
+    const [totalPrice, setTotalPrice] = useState(0);
 
     useEffect(() => {
         const fetchCounts = async () => {
             try {
                 const currentUser = auth.currentUser;
                 const supplierId = currentUser.uid;
+
                 // Fetch delivery men count
                 const deliveryQuery = query(collection(db, 'users'), where('usertype', '==', 'delivery'), where('supplierId', '==', supplierId));
                 const querySnapshot = await getDocs(deliveryQuery);
                 setUserCount(querySnapshot.size);
 
                 // Fetch products count
-                const dzb = getDatabase();
-                const productsRef = ref(dzb, 'products');
+                const myDB = getDatabase();
+                const productsRef = ref(myDB, 'products');
                 onValue(productsRef, (snapshot) => {
                     let count = 0;
+                    let total = 0;
                     snapshot.forEach((childSnapshot) => {
                         const product = childSnapshot.val();
                         if (product.userId === supplierId) {
                             count++;
+                            total += parseFloat(product.price);
                         }
                     });
+                    setTotalPrice(total);
                     setProductCount(count);
                 });
-                console.log(productCount);
 
             } catch (error) {
                 console.error('Error fetching user count:', error);
@@ -41,7 +44,7 @@ const Dashboard = () => {
         };
 
         fetchCounts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (
         <Fragment>
@@ -56,7 +59,7 @@ const Dashboard = () => {
                         <div className="col-xl-12 col-sm-12 mb-3">
                             <div className="card text-white bg-primary o-hidden h-100">
                                 <div className="card-body">
-                                    <div className="text-center card-font-size">Total Amount<br /> <b>$4567</b>
+                                    <div className="text-center card-font-size">Total Amount<br /> <b>EGP: {totalPrice}</b>
                                     </div>
                                 </div>
                             </div>

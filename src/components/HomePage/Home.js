@@ -2,7 +2,7 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import MetaData from '../layout/metaData';
-import Sidebar from '../Admin/Sidebar';
+import Sidebar from '../layout/Sidebar';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { auth } from '../../firebase';
 
@@ -16,16 +16,14 @@ const Home = () => {
 
 
     useEffect(() => {
-        // Get the current authenticated user
         const unsubscribe = auth.onAuthStateChanged(currentUser => {
             setUser(currentUser);
         });
-
         return () => unsubscribe();
     }, []);
+
     useEffect(() => {
         if (!user) return;
-
         const database = getDatabase();
         const productsRef = ref(database, 'products');
 
@@ -49,7 +47,7 @@ const Home = () => {
     }, [user]);
 
     const filteredProducts = keyword
-        ? products.filter(product => product.title.toLowerCase().includes(keyword.toLowerCase()))
+        ? products.filter(product => product.productName.toLowerCase().includes(keyword.toLowerCase()))
         : products;
 
 

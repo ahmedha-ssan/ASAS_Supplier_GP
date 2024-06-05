@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { auth, db } from '../../firebase';
 import { getDoc, doc } from "firebase/firestore";
 import Search from './Search';
@@ -9,6 +9,7 @@ const Header = () => {
     const [userName, setUserName] = useState('');
     const [userImage, setUserImage] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -47,14 +48,17 @@ const Header = () => {
 
     const handleSearch = (keyword) => {
         if (keyword.trim()) {
-            navigate(`/search/${keyword}`); // Use navigate instead of history.push
+            navigate(`/search/${keyword}`);
         } else {
             navigate('/');
         }
     };
+
     return (
         <Fragment>
+
             <nav className="navbar row">
+
                 <div className="col-12 col-md-3">
                     <div className="navbar-brand">
                         <Link to="/">
@@ -64,8 +68,9 @@ const Header = () => {
                 </div>
 
                 <div className="col-12 col-md-6 mt-2 mt-md-0">
-                    {user && <Search handleSearch={handleSearch} />} {/* Conditionally render Search if user is logged in */}
+                    {user && (location.pathname === '/Home' || location.pathname.startsWith('/search')) && <Search handleSearch={handleSearch} />} {/* Render only on the home page */}
                 </div>
+
                 <div className="col-12 col-md-3 mt-4 mt-md-0 text-center">
                     {user ? (
                         <div className="ml-4 dropdown d-inline">

@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { collection, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
 import { db, auth } from '../../firebase';
-import Sidebar from './Sidebar';
+import Sidebar from '../layout/Sidebar';
 import MetaData from '../layout/metaData';
 import Loader from '../layout/Loader';
 

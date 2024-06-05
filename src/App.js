@@ -2,25 +2,25 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import { auth } from './firebase'
-import Login from './components/Admin/Login'
-import Register from './components/Admin/Register'
+import Login from './components/Users/Login'
+import Register from './components/Users/Register'
 
 //Admin imports
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import Home from './components/HomePage/Home';
 import Dashboard from './components/Admin/Dashboard';
-import ProductList from './components/Admin/ProductList';
-import NewProduct from './components/Admin/NewProduct';
+import ProductList from './components/Product/ProductList';
+import NewProduct from './components/Product/AddProduct';
 import NewDelivery from './components/Admin/NewDelivery';
-import OrdersList from './components/Admin/OrderList';
+import OrdersList from './components/Orders/OrderList';
 import UsersList from './components/Admin/UsersList';
-import ForgotPassword from './components/Admin/ForgotPassword'
+import ForgotPassword from './components/Users/ForgotPassword'
 import UpdateUser from './components/Admin/UpdateUser';
 import Profile from './components/Admin/Profile';
 import UpdateProfile from './components/Admin/UpdateProfile'
-import ProductCard from './components/Admin/ProductCard';
-import UpdateProduct from './components/Admin/UpdateProduct';
+import ProductDetails from './components/Product/ProductDetails';
+import UpdateProduct from './components/Product/UpdateProduct';
 
 
 function App() {
@@ -88,7 +88,7 @@ function App() {
 
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/Product/:id" element={<ProductCard />} />
+              <Route path="/Product/:id" element={<ProductDetails />} />
               <Route path="/admin/products" element={<ProductList />} />
               <Route path="/admin/product/:productId" element={<UpdateProduct />} />
               <Route path="/admin/addproducts" element={<NewProduct />} />

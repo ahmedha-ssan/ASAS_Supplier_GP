@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import MetaData from '../layout/metaData';
-import Sidebar from './Sidebar'
+import Sidebar from '../layout/Sidebar.js'
 import { getDatabase, ref as rtdbRef, onValue, remove } from 'firebase/database';
 import { app } from '../../firebase.js';
 import { getAuth } from 'firebase/auth';
@@ -13,6 +13,8 @@ const ProductsList = () => {
     const [products, setProducts] = useState([]);
     // eslint-disable-next-line no-unused-vars
     const [userId, setUserId] = useState(null);
+    const [search, setSearch] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState([]);
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
@@ -29,16 +31,23 @@ const ProductsList = () => {
                         }
                     }
                     setProducts(productsList);
+                    setFilteredProducts(productsList);
                 });
             } else {
                 setUserId(null);
                 setProducts([]);
+                setFilteredProducts([]);
             }
         });
 
         return () => unsubscribe();
     }, []);
 
+    const submitHandler = (e) => {
+        e.preventDefault();
+        const searchResult = products.filter(product => product._id.toString().includes(search));
+        setFilteredProducts(searchResult);
+    };
 
     const deleteProductHandler = (id) => {
         const productRef = rtdbRef(database, `products/${id}`);
@@ -55,10 +64,35 @@ const ProductsList = () => {
                 <div className="col-12 col-md-10">
                     <Fragment>
                         <h1 className="my-5">All Products</h1>
-                        <table className="table">
+                        <div className="row justify-content-center mt-5">
+                            <div className="col-5">
+                                <form onSubmit={submitHandler}>
+                                    <div className="form-group">
+                                        <label htmlFor="productId_field">Enter Product ID</label>
+                                        <input
+                                            type="text"
+                                            id="productId_field"
+                                            className="form-control"
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <button
+                                        id="search_button"
+                                        type="submit"
+                                        className="btn btn-primary btn-block py-2"
+                                    >
+                                        SEARCH
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <table className="table mt-5">
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Seller</th>
                                     <th>Name</th>
                                     <th>Price</th>
                                     <th>Stock</th>
@@ -66,18 +100,17 @@ const ProductsList = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {products.map(product => (
+                                {filteredProducts.map(product => (
                                     <tr key={product._id}>
                                         <td>{product._id}</td>
+                                        <td>{product.seller}</td>
                                         <td>{product.productName}</td>
                                         <td>{product.price}</td>
                                         <td>{product.stock}</td>
                                         <td>
-
                                             <Link to={`/admin/product/${product._id}`} className="btn btn-primary py-1 px-2">
                                                 <i className="fa fa-pencil"></i>
                                             </Link>
-
                                             <button className="btn btn-danger py-1 px-2 ml-2" onClick={() => deleteProductHandler(product._id)}>
                                                 <i className="fa fa-trash"></i>
                                             </button>

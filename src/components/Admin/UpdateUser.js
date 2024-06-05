@@ -4,7 +4,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import MetaData from '../layout/metaData';
-import Sidebar from './Sidebar';
+import Sidebar from '../layout/Sidebar';
 
 const UpdateUser = () => {
     const { userId } = useParams();

@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Fragment, useState } from 'react';
-import MetaData from '../layout/metaData';
+import MetaData from '../layout/metaData.js';
 import { useNavigate } from 'react-router-dom';
 import { ProgressBar } from 'react-bootstrap';
-import Sidebar from './Sidebar';
+import Sidebar from '../layout/Sidebar.js';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { getDatabase, ref as rtdbRef, push, set } from 'firebase/database';
 import { app } from '../../firebase.js';
@@ -13,14 +13,14 @@ const storage = getStorage(app);
 const database = getDatabase(app);
 const auth = getAuth(app);
 
-const NewProduct = () => {
+const AddProduct = () => {
     const [images, setImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
     const [selectedModel, setSelectedModel] = useState(null);
     const [previewModel, setPreviewModel] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [productName, setProductName] = useState("");
-    const [price, setPrice] = useState("");
+    const [price, setPrice] = useState(0);
     const [material, setMaterial] = useState("");
     const [sizeX, setSizeX] = useState("");
     const [sizeY, setSizeY] = useState("");
@@ -31,7 +31,7 @@ const NewProduct = () => {
     const [seller, setSeller] = useState("");
     const [weight, setweight] = useState("");
 
-    
+
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);// Initialize loading state
 
@@ -138,7 +138,7 @@ const NewProduct = () => {
         setPreviewImages([]);
         setSelectedModel(null);
         setProductName("");
-        setPrice("");
+        setPrice(0);
         setMaterial("");
         setSizeX("");
         setSizeY("");
@@ -221,7 +221,7 @@ const NewProduct = () => {
                                         required
                                     />
                                 </div>
-                                
+
                                 <div className="form-group d-flex align-items-center">
                                     <label htmlFor="size_x" className="mr-1">Size X:</label>
                                     <input
@@ -374,6 +374,6 @@ const NewProduct = () => {
         </Fragment>
     )
 }
-export default NewProduct
+export default AddProduct
 
 

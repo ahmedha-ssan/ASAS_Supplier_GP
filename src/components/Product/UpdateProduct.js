@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getDatabase, ref as rtdbRef, get, update } from 'firebase/database';
 import { app } from '../../firebase';
 import MetaData from '../layout/metaData';
-import Sidebar from './Sidebar';
+import Sidebar from '../layout/Sidebar';
 
 const database = getDatabase(app);
 

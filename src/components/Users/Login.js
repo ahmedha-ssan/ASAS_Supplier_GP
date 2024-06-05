@@ -39,14 +39,14 @@ const Login = () => {
 
         try {
             const { user } = await signInWithEmailAndPassword(auth, email, password);
-            setLoading(false);
+
             auth.signOut();
-            // Fetch user data from Firestore
+
             const userDoc = await getDoc(doc(db, 'supplier', user.uid));
             if (userDoc.exists()) {
                 // eslint-disable-next-line no-unused-vars
                 const { user } = await signInWithEmailAndPassword(auth, email, password);
-
+                setLoading(false);
                 navigate('/');
             } else {
                 setLoading(false);
@@ -87,9 +87,9 @@ const Login = () => {
 
 
     return (
-        <Fragment>
+        <Fragment >
             {loading ? <Loader /> : (
-                <Fragment>
+                <Fragment className="yasser">
                     <MetaData title={'Login'} />
 
                     <div className="row wrapper">
