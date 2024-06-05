@@ -6,11 +6,15 @@ import Sidebar from '../Admin/Sidebar';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { auth } from '../../firebase';
 
+// import 'rc-slider/assets/index.css';
 
 const Home = () => {
     const { keyword } = useParams();
     const [user, setUser] = useState(null);
     const [products, setProducts] = useState([]);
+
+
+
     useEffect(() => {
         // Get the current authenticated user
         const unsubscribe = auth.onAuthStateChanged(currentUser => {
@@ -43,6 +47,7 @@ const Home = () => {
 
         fetchProducts();
     }, [user]);
+
     const filteredProducts = keyword
         ? products.filter(product => product.title.toLowerCase().includes(keyword.toLowerCase()))
         : products;
@@ -94,15 +99,14 @@ const ProductCard = ({ product }) => {
                     ))}
                 </div>
                 <div className="card-body d-flex flex-column">
-                    <small className="card-title">
-                        <a href={`/product/${product.id}`}>{product.id}</a>
-                    </small>
-                    <h5 className="card-title">
-                        Name: <a href={`/product/${product.id}`}>{product.productName}</a>
-                    </h5>
+
+                    <h3 className="card-title">
+                        <a href={`/product/${product.id}`}>{product.productName}</a>
+                    </h3>
                     <h5 className="card-title">
                         EGP: <a href={`/product/${product.id}`}>{product.price}</a>
                     </h5>
+
                     <div class="ratings mt-auto">
                         <div class="rating-outer">
                             <div class="rating-inner"></div>

@@ -1,6 +1,7 @@
+import React, { Fragment, useEffect, useState } from 'react';
+import Sidebar from './Sidebar';
 import MetaData from '../layout/metaData';
 import Loader from '../layout/Loader';
-import React, { Fragment, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getDatabase, ref, onValue, get } from 'firebase/database';
 
@@ -16,7 +17,6 @@ const ProductCard = () => {
 
         const fetchProducts = async () => {
             if (id) {
-                // Fetch a single product if ID is provided
                 const productRef = ref(database, `products/${id}`);
                 try {
                     const snapshot = await get(productRef);
@@ -27,7 +27,6 @@ const ProductCard = () => {
                     console.error('Error fetching product data:', error);
                 }
             } else {
-                // Fetch all products
                 onValue(productsRef, (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
@@ -51,74 +50,43 @@ const ProductCard = () => {
                 <Loader />
             ) : (
                 <Fragment>
-                    <MetaData title={id ? (product ? product.productName : 'Product Details') : 'Product Card'} />
-                    {id ? (
-                        <div className="row justify-content-around mt-5 user-info">
-                            {product ? (
-                                <div className="col-12 col-md-8">
-                                    <div className="card p-3 rounded">
-                                        <div className="thumbnail-images">
-                                            {product.images.map((imageUrl, index) => (
-                                                <img
-                                                    key={index}
-                                                    src={imageUrl}
-                                                    style={{ height: 'auto', width: 'auto' }}
-                                                    className="thumbnail"
-                                                    alt={`Thumbnail ${index + 1}`}
-                                                />
-                                            ))}
-                                        </div>
-                                        <div className="card-body">
-                                            <p className="card-text">ID: {id}</p>
-                                            <h5 className="card-title">Name: {product.productName}</h5>
-                                            <p className="card-text">Category: {product.category}</p>
-                                            <p className="card-text">Dimensions: {product.sizeX} x {product.sizeY} x {product.sizeZ}</p>
-                                            <p className="card-text">Stock: {product.stock}</p>
-                                            <p className="card-text">Material: {product.material}</p>
-                                            <p className="card-text">Description: {product.description}</p>
-                                            <p className="card-text">Seller: {product.seller}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <p>Product not found</p>
-                            )}
-                        </div>
-                    ) : (
-                        <Fragment>
-                            <h2 className="mt-5 ml-5">Product Details</h2>
-                            <div className="row justify-content-around mt-5 user-info">
-                                {products.map((product) => (
-                                    <div key={product.id} className="col-sm-12 col-md-6 col-lg-4 my-3">
-                                        <div className="card p-3 rounded">
-                                            <div className="thumbnail-images">
-                                                {product.images.map((imageUrl, index) => (
-                                                    <img
-                                                        key={index}
-                                                        src={imageUrl}
-                                                        style={{ height: 'auto', width: 'auto' }}
-                                                        className="thumbnail"
-                                                        alt={`Thumbnail ${index + 1}`}
-                                                    />
-                                                ))}
-                                            </div>
-                                            <div className="card-body">
-                                                <p className="card-text">ID: {id}</p>
-                                                <h5 className="card-title">Name: {product.productName}</h5>
-                                                <p className="card-text">Category: {product.category}</p>
-                                                <p className="card-text">Dimensions: {product.sizeX} x {product.sizeY} x {product.sizeZ}</p>
-                                                <p className="card-text">Stock: {product.stock}</p>
-                                                <p className="card-text">Material: {product.material}</p>
-                                                <p className="card-text">Description: {product.description}</p>
-                                                <p className="card-text">Seller: {product.seller}</p>
-                                                <a href={`/product/${product.id}`} id="view_btn" className="btn btn-block">View Details</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                    <MetaData title={id ? (product ? product.name : 'Product Details') : 'Product Card'} />
+                    <div className="container container-fluid">
+                        <div className="row f-flex justify-content-around">
+                            <div className="col-12 col-lg-5 img-fluid" id="product_image">
+                                <img src={product ? product.images[0] : ''} alt={product ? product.name : ''} height="450" width="500" />
                             </div>
-                        </Fragment>
-                    )}
+
+                            <div className="col-12 col-lg-5 mt-5">
+                                <h3>{product ? product.productName : ''}</h3>
+                                <p id="product_id">Product ID : {product ? id : ''}</p>
+
+                                <hr />
+
+                                <div className="rating-outer">
+                                    <div className="rating-inner" style={{ width: `${(product.ratings / 5) * 100}%` }}></div>
+                                </div>
+
+                                <span id="no_of_reviews">({product ? product.numOfReviews : ''} Reviews)</span>
+
+                                <hr />
+
+                                <p id="product_price">${product ? product.price : ''}</p>
+                                <hr />
+
+                                <p>Status: <span id="stock_status" className={product && product.stock > 0 ? 'greenColor' : 'redColor'}>{product && product.stock > 0 ? 'In Stock' : 'Out of Stock'}</span></p>
+
+                                <hr />
+
+                                <h4 className="mt-2">Description:</h4>
+                                <p>{product ? product.description : ''}</p>
+                                <hr />
+                                <p id="product_seller mb-3">Sold by: <strong>{product ? product.seller : ''}</strong></p>
+
+
+                            </div>
+                        </div>
+                    </div>
                 </Fragment>
             )}
         </Fragment>

@@ -1,12 +1,14 @@
 import React, { Fragment, useState, useEffect } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../../firebase';
 import { getDoc, doc } from "firebase/firestore";
+import Search from './Search';
 
 const Header = () => {
     const [user, setUser] = useState(null);
     const [userName, setUserName] = useState('');
     const [userImage, setUserImage] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -36,14 +38,20 @@ const Header = () => {
 
     const logoutHandler = async () => {
         try {
-            await auth.signOut(); // Sign out user with Firebase
+            await auth.signOut();
             alert('Logged out successfully.');
         } catch (error) {
             alert('Error logging out.');
         }
     };
 
-
+    const handleSearch = (keyword) => {
+        if (keyword.trim()) {
+            navigate(`/search/${keyword}`); // Use navigate instead of history.push
+        } else {
+            navigate('/');
+        }
+    };
     return (
         <Fragment>
             <nav className="navbar row">
@@ -55,6 +63,9 @@ const Header = () => {
                     </div>
                 </div>
 
+                <div className="col-12 col-md-6 mt-2 mt-md-0">
+                    {user && <Search handleSearch={handleSearch} />} {/* Conditionally render Search if user is logged in */}
+                </div>
                 <div className="col-12 col-md-3 mt-4 mt-md-0 text-center">
                     {user ? (
                         <div className="ml-4 dropdown d-inline">

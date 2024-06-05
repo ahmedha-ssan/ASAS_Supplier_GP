@@ -29,6 +29,9 @@ const NewProduct = () => {
     const [category, setCategory] = useState("Electronics");
     const [stock, setStock] = useState("");
     const [seller, setSeller] = useState("");
+    const [weight, setweight] = useState("");
+
+    
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);// Initialize loading state
 
@@ -114,6 +117,7 @@ const NewProduct = () => {
                             description,
                             category,
                             stock,
+                            weight,
                             seller,
                             images: downloadImageURLs,
                             model: modelDownloadURL,
@@ -142,6 +146,7 @@ const NewProduct = () => {
         setDescription("");
         setCategory("Electronics");
         setStock("");
+        setweight("");
         setSeller("");
         setPreviewModel(null);
         setLoading(false);
@@ -205,6 +210,18 @@ const NewProduct = () => {
                                         required
                                     />
                                 </div>
+                                <div className="form-group">
+                                    <label for="price_field">Weight</label>
+                                    <input
+                                        type="text"
+                                        id="price_field"
+                                        className="form-control"
+                                        value={weight}
+                                        onChange={(e) => setweight(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                
                                 <div className="form-group d-flex align-items-center">
                                     <label htmlFor="size_x" className="mr-1">Size X:</label>
                                     <input

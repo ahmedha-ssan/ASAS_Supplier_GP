@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import { auth } from './firebase'
-
 import Login from './components/Admin/Login'
 import Register from './components/Admin/Register'
 
@@ -21,6 +20,8 @@ import UpdateUser from './components/Admin/UpdateUser';
 import Profile from './components/Admin/Profile';
 import UpdateProfile from './components/Admin/UpdateProfile'
 import ProductCard from './components/Admin/ProductCard';
+import UpdateProduct from './components/Admin/UpdateProduct';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -47,6 +48,7 @@ function App() {
   if (loading) {
     return <div>Loading...</div>;
   }
+
   return (
     <Router>
       <div className="App">
@@ -61,7 +63,7 @@ function App() {
           {isLoggedIn ? (
             <Route path="/" element={<Navigate to="/Home" />} />
           ) : (
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Login />} />
           )}
           {isLoggedIn ? (
             <Route path="/Login" element={<Navigate to="/dashboard" />} />
@@ -82,12 +84,13 @@ function App() {
           {/* Private routes accessible only if logged in */}
           {isLoggedIn && (
             <>
+              <Route path="/search/:keyword" element={<Home />} />
+
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/home" element={<Home />} />
-
               <Route path="/Product/:id" element={<ProductCard />} />
-
               <Route path="/admin/products" element={<ProductList />} />
+              <Route path="/admin/product/:productId" element={<UpdateProduct />} />
               <Route path="/admin/addproducts" element={<NewProduct />} />
               <Route path="/admin/adddelivery" element={<NewDelivery />} />
               <Route path="/admin/orders" element={<OrdersList />} />
@@ -95,9 +98,9 @@ function App() {
               <Route path="/admin/user/:userId" element={<UpdateUser />} />
               <Route path="/me" element={<Profile />} />
               <Route path="/me/update" element={<UpdateProfile />} />
-
             </>
           )}
+          {!isLoggedIn && <Route path="*" element={<Navigate to="/Login" />} />}
         </Routes>
         <Footer />
       </div>
