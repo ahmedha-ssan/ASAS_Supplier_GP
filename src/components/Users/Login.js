@@ -4,8 +4,7 @@ import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, db, provider } from '../../firebase'
 import { getDoc, doc } from "firebase/firestore";
 import MetaData from '../layout/metaData';
-import Loader from '../layout/Loader'
-
+import Loader from '../layout/Loader';
 
 const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -134,7 +133,11 @@ const Login = () => {
                                     className="btn btn-block py-3 mt-3"
                                     onClick={handleGoogleSignIn}
                                     disabled={loading}
+                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
+
+                                    <img src="/images/sss.png" alt="Google Logo" style={{ width: '30px', marginRight: '30px' }} />
+
                                     SIGN IN WITH GOOGLE
                                 </button>
                                 <Link to="/Register" className="float-right mt-3">New User?</Link>
