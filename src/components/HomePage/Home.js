@@ -104,7 +104,9 @@ const ProductCard = ({ product }) => {
                     <h5 className="card-title">
                         EGP: <a href={`/product/${product.id}`}>{product.price}</a>
                     </h5>
-
+                    <h5 className="card-title">
+                        Stock: <a href={`/product/${product.id}`}>{product.stock}</a>
+                    </h5>
                     <div class="ratings mt-auto">
                         <div class="rating-outer">
                             <div class="rating-inner"></div>

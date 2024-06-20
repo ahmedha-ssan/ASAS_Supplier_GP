@@ -9,6 +9,7 @@ const Dashboard = () => {
     const [userCount, setUserCount] = useState(0);
     const [productCount, setProductCount] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
+    const [outOfStockCount, setOutOfStockCount] = useState(0);
 
     useEffect(() => {
         const fetchCounts = async () => {
@@ -27,17 +28,27 @@ const Dashboard = () => {
                 onValue(productsRef, (snapshot) => {
                     let count = 0;
                     let total = 0;
+                    let outOfStock = 0;
+
                     snapshot.forEach((childSnapshot) => {
                         const product = childSnapshot.val();
                         if (product.userId === supplierId) {
                             count++;
-                            total += parseFloat(product.price);
+                            const price = parseFloat(product.price);
+                            const stock = parseInt(product.stock, 10);
+                            total += price * stock;
+                            // eslint-disable-next-line eqeqeq
+                            if (product.stock == 0) {
+                                outOfStock++;
+                            }
                         }
                     });
                     setTotalPrice(total);
                     setProductCount(count);
-                });
+                    setOutOfStockCount(outOfStock);
+                    console.log('Total:', total);
 
+                });
             } catch (error) {
                 console.error('Error fetching user count:', error);
             }
@@ -115,7 +126,7 @@ const Dashboard = () => {
                         <div className="col-xl-3 col-sm-6 mb-3">
                             <div className="card text-white bg-warning o-hidden h-100">
                                 <div className="card-body">
-                                    <div className="text-center card-font-size">Out of Stock<br /> <b>4</b></div>
+                                    <div className="text-center card-font-size">Out of Stock<br /> <b>{outOfStockCount}</b></div>
                                 </div>
                             </div>
                         </div>

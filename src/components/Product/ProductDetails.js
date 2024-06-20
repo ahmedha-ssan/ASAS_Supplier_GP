@@ -75,22 +75,26 @@ const ProductDetails = () => {
                                     <hr />
                                     <p id="product_price">${product.price}</p>
                                     <hr />
-                                    <p>Status: <span id="stock_status" className={product.stock > 0 ? 'greenColor' : 'redColor'}>{product.stock > 0 ? 'In Stock' : 'Out of Stock'}</span></p>
+                                    <p>Status: <span id="stock_status" className={product.stock > 0 ? 'greenColor' : 'redColor'}>{product.stock > 0 ? 'In Stock' : 'Out of Stock'}</span> </p>
+                                    <hr />
+                                    <p>Quantity: {product.stock} </p>
                                     <hr />
                                     <h4 className="mt-2">Description:</h4>
                                     <p>{product.description}</p>
                                     <hr />
                                     <p id="product_seller mb-3">Sold by: <strong>{product.seller}</strong></p>
+                                    <div className="row mt-5">
+                                        <div className="col-12 col-lg-8">
+                                            <h3>Reviews</h3>
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
 
                         </div>
                     </div>
-                    <div className="row mt-5">
-                        <div className="col-12 col-lg-8">
-                            <h3>Reviews</h3>
-                        </div>
-                    </div>
+
                 </Fragment>
             )}
         </Fragment>
