@@ -37,10 +37,10 @@ const Login = () => {
 
 
         try {
+            setLoading(false);
             const { user } = await signInWithEmailAndPassword(auth, email, password);
-
             auth.signOut();
-
+            setLoading(true);
             const userDoc = await getDoc(doc(db, 'supplier', user.uid));
             if (userDoc.exists()) {
                 // eslint-disable-next-line no-unused-vars
