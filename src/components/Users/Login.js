@@ -1,6 +1,6 @@
-import React, { Fragment, useState } from 'react'
+import React, { useState, useEffect, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom'
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, setPersistence, browserSessionPersistence, onAuthStateChanged } from 'firebase/auth';
 import { auth, db, provider } from '../../firebase'
 import { getDoc, doc } from "firebase/firestore";
 import MetaData from '../layout/metaData';
@@ -20,6 +20,17 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // Redirect to login page if not authenticated
+                navigate('/login');
+            }
+        });
+        return () => unsubscribe();
+    }, [navigate]);
+
     const submitHandler = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -37,6 +48,9 @@ const Login = () => {
 
 
         try {
+            await setPersistence(auth, browserSessionPersistence);
+
+
             setLoading(false);
             const { user } = await signInWithEmailAndPassword(auth, email, password);
             auth.signOut();
@@ -56,31 +70,28 @@ const Login = () => {
             alert(error.message); // Handle error appropriately in your application
         }
     };
+    // Google sign-in handler
     const handleGoogleSignIn = async () => {
+        setLoading(true);
         try {
-            const { user } = await signInWithPopup(auth, provider);
-            setLoading(false);
+            // Set session persistence for authentication
+            await setPersistence(auth, browserSessionPersistence);
 
-            // Fetch user data from Firestore
+            // Sign in with Google
+            const { user } = await signInWithPopup(auth, provider);
+
+            // Check if user data exists in Firestore
             const userDoc = await getDoc(doc(db, 'supplier', user.uid));
             if (userDoc.exists()) {
-                const userData = userDoc.data();
-                if (userData.usertype === 'supplier') {
-                    navigate('/');
-                } else {
-                    setLoading(false);
-                    alert('Only suppliers are allowed to sign in');
-                    // Sign out the user
-                    await auth.signOut();
-                }
+                navigate('/');
             } else {
-                setLoading(false);
                 alert('User data not found');
                 await auth.signOut();
             }
         } catch (error) {
+            alert(error.message);
+        } finally {
             setLoading(false);
-            alert(error.message); // Handle error appropriately in your application
         }
     };
 
