@@ -14,6 +14,7 @@ import ProductList from './components/Product/ProductList';
 import NewProduct from './components/Product/AddProduct';
 import NewDelivery from './components/Admin/NewDelivery';
 import OrdersList from './components/Orders/OrderList';
+import RefundsList from './components/Orders/RefundsList';
 import UsersList from './components/Admin/UsersList';
 import ForgotPassword from './components/Users/ForgotPassword'
 import UpdateUser from './components/Admin/UpdateUser';
@@ -94,6 +95,8 @@ function App() {
               <Route path="/admin/addproducts" element={<NewProduct />} />
               <Route path="/admin/adddelivery" element={<NewDelivery />} />
               <Route path="/admin/orders" element={<OrdersList />} />
+              <Route path="/admin/refunds" element={<RefundsList />} />
+
               <Route path="/admin/users" element={<UsersList />} />
               <Route path="/admin/user/:userId" element={<UpdateUser />} />
               <Route path="/me" element={<Profile />} />

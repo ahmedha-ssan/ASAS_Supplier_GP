@@ -1,5 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import 'font-awesome/css/font-awesome.min.css';
+
 const Sidebar = () => {
     return (
         <div className="sidebar-wrapper">
@@ -23,6 +25,10 @@ const Sidebar = () => {
                     <li>
                         <Link to="/admin/orders"><i className="fa fa-shopping-basket"></i> Orders</Link>
                     </li>
+                    <li>
+                        <Link to="/admin/refunds"><i className="fa fa-exchange" ></i> Refunds</Link>
+                    </li>
+
                     <li>
                         <a href="#deliverySubmenu" data-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><i
                             className="fa fa-truck"></i> Delivery</a>
