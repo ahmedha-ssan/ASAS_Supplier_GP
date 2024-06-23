@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { auth, db } from '../../firebase';
 import { doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import MetaData from '../layout/metaData';
@@ -11,6 +11,7 @@ const NewDelivery = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
+    const [city, setCity] = useState('');
     const [password, setPassword] = useState('');
     const [confirmpassword, setconfirmpassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -38,13 +39,11 @@ const NewDelivery = () => {
                 querySnapshot.forEach((doc) => {
                     deliveryMenData.push({ id: doc.id, ...doc.data() });
                 });
-
                 setDeliveryMen(deliveryMenData);
             } catch (error) {
                 console.error('Error fetching delivery men:', error);
             }
         };
-
         fetchDeliveryMen();
     }, []);
 
@@ -66,10 +65,21 @@ const NewDelivery = () => {
         }
 
         try {
+            // Save the current user session data
             const currentUser = auth.currentUser;
             const currentEmail = currentUser.email;
             const currentPassword = prompt("Please re-enter your password to continue:", "");
 
+            if (!currentPassword) {
+                setLoading(false);
+                alert('Password entry is required.');
+                return;
+            }
+            // Re-authenticate the current user
+            const credential = EmailAuthProvider.credential(currentEmail, currentPassword);
+            await reauthenticateWithCredential(currentUser, credential);
+
+            // Create the new delivery man user
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
@@ -78,19 +88,28 @@ const NewDelivery = () => {
                 phoneNumber,
                 email,
                 address,
+                city,
                 usertype: "delivery",
                 supplierId: currentUser.uid
             });
+
+            setLoading(true);
 
             await signOut(auth);
             await signInWithEmailAndPassword(auth, currentEmail, currentPassword);
 
             setLoading(false);
+
             navigate('/admin/users');
 
         } catch (error) {
+            if (error.code === 'auth/wrong-password') {
+                alert('The password you entered is incorrect.');
+            } else {
+                alert(error.message);
+            }
+        } finally {
             setLoading(false);
-            alert(error.message); // Handle error appropriately in your application
         }
     };
 
@@ -137,6 +156,18 @@ const NewDelivery = () => {
                                         className="form-control"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="address_field">City</label>
+                                    <input
+                                        type="text"
+                                        id="address_field"
+                                        className="form-control"
+                                        value={city}
+                                        onChange={(e) => setCity(e.target.value)}
                                         required
                                     />
                                 </div>

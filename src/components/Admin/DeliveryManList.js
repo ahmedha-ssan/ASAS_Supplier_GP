@@ -34,9 +34,9 @@ const UsersList = () => {
         try {
             await deleteDoc(doc(db, 'users', userId));
             setUsers(users.filter(user => user.id !== userId));
-            alert.success('User deleted successfully');
+            alert('User deleted successfully');
         } catch (error) {
-            alert.success('Error deleting user');
+            alert('Error deleting user');
         }
     };
 
@@ -46,6 +46,7 @@ const UsersList = () => {
                 { label: 'Name', field: 'name', sort: 'asc' },
                 { label: 'Email', field: 'email', sort: 'asc' },
                 { label: 'Phone Number', field: 'phoneNumber', sort: 'asc' },
+                { label: 'City', field: 'city', sort: 'asc' },
                 { label: 'Address', field: 'address', sort: 'asc' },
                 { label: 'Actions', field: 'actions' },
             ],
@@ -58,6 +59,7 @@ const UsersList = () => {
                 name: user.name,
                 email: user.email,
                 phoneNumber: user.phoneNumber,
+                city: user.city,
                 address: user.address,
                 actions: (
                     <Fragment>
@@ -92,6 +94,7 @@ const UsersList = () => {
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Phone Number</th>
+                                        <th>City</th>
                                         <th>Address</th>
                                         <th>Actions</th>
                                     </tr>
@@ -102,6 +105,7 @@ const UsersList = () => {
                                             <td>{user.name}</td>
                                             <td>{user.email}</td>
                                             <td>{user.phoneNumber}</td>
+                                            <td>{user.city}</td>
                                             <td>{user.address}</td>
                                             <td>
                                                 <Link to={`/admin/user/${user.id}`} className="btn btn-primary py-1 px-2">

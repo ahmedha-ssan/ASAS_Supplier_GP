@@ -12,14 +12,14 @@ import Home from './components/HomePage/Home';
 import Dashboard from './components/Admin/Dashboard';
 import ProductList from './components/Product/ProductList';
 import NewProduct from './components/Product/AddProduct';
-import NewDelivery from './components/Admin/NewDelivery';
+import NewDelivery from './components/Admin/NewDeliveryMan';
 import OrdersList from './components/Orders/OrderList';
 import RefundsList from './components/Orders/RefundsList';
-import UsersList from './components/Admin/UsersList';
+import UsersList from './components/Admin/DeliveryManList';
 import ForgotPassword from './components/Users/ForgotPassword'
-import UpdateUser from './components/Admin/UpdateUser';
+import UpdateUser from './components/Admin/UpdateDeliveryMan';
 import Profile from './components/Admin/Profile';
-import UpdateProfile from './components/Admin/UpdateProfile'
+import UpdateProfile from './components/Admin/UpdateAdminProfile'
 import ProductDetails from './components/Product/ProductDetails';
 import UpdateProduct from './components/Product/UpdateProduct';
 

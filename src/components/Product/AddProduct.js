@@ -30,10 +30,8 @@ const AddProduct = () => {
     const [stock, setStock] = useState("");
     const [seller, setSeller] = useState("");
     const [weight, setweight] = useState("");
-
-
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);// Initialize loading state
+    const [loading, setLoading] = useState(false);
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
@@ -121,9 +119,8 @@ const AddProduct = () => {
                             seller,
                             images: downloadImageURLs,
                             model: modelDownloadURL,
-                            userId // store the user ID with the product
+                            userId
                         });
-
                         clearInputs();
                         navigate('/admin/products');
                     }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getDatabase, ref as rtdbRef, get, update } from 'firebase/database';
-import { app } from '../../firebase';
+import { app, auth } from '../../firebase';
 import MetaData from '../layout/metaData';
 import Sidebar from '../layout/Sidebar';
 
@@ -31,21 +31,33 @@ const UpdateProduct = () => {
 
                 if (productSnapshot.exists()) {
                     const productData = productSnapshot.val();
-                    setProductName(productData.productName);
-                    setPrice(productData.price);
-                    setStock(productData.stock);
-                    setcategory(productData.category);
-                    setdescription(productData.description);
-                    setmaterial(productData.material);
-                    setSeller(productData.seller);
-                    setsizeX(productData.sizeX);
-                    setsizeY(productData.sizeY);
-                    setsizeZ(productData.sizeZ);
-                    setweight(productData.weight);
+
+                    // Get the current user's ID
+                    const currentUserId = auth.currentUser.uid;
+
+                    // Check if the product's userId matches the current user's ID
+                    if (productData.userId === currentUserId) {
+                        setProductName(productData.productName);
+                        setPrice(productData.price);
+                        setStock(productData.stock);
+                        setcategory(productData.category);
+                        setdescription(productData.description);
+                        setmaterial(productData.material);
+                        setSeller(productData.seller);
+                        setsizeX(productData.sizeX);
+                        setsizeY(productData.sizeY);
+                        setsizeZ(productData.sizeZ);
+                        setweight(productData.weight);
+                        setLoading(false);
+                    } else {
+                        alert('You are not authorized to edit this product.');
+                        navigate('/admin/products');
+                    }
                     setLoading(false);
                 } else {
                     setLoading(false);
                     alert('Product not found');
+                    navigate('/admin/products');
                 }
             } catch (error) {
                 setLoading(false);
@@ -54,7 +66,7 @@ const UpdateProduct = () => {
         };
 
         fetchProduct();
-    }, [productId]);
+    }, [productId, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

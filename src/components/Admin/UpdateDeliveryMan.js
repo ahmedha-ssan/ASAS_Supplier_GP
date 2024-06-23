@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db, auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import MetaData from '../layout/metaData';
 import Sidebar from '../layout/Sidebar';
@@ -12,24 +12,28 @@ const UpdateUser = () => {
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [address, setAddress] = useState('');
+    const [city, setCity] = useState('');
     const navigate = useNavigate();
-
+    const currentUser = auth.currentUser;
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 const userDoc = await getDoc(doc(db, 'users', userId));
-                if (userDoc.exists()) {
+                const userData = userDoc.data();
+
+                if (userData.usertype === 'delivery' && userData.supplierId === currentUser.uid) {
                     setName(userDoc.data().name);
                     setEmail(userDoc.data().email);
                     setAddress(userDoc.data().address);
-
+                    setCity(userDoc.data().city);
                     setPhoneNumber(userDoc.data().phoneNumber);
                     setLoading(false);
                 } else {
                     setLoading(false);
-                    alert('User not found');
+                    alert('User not found or unauthorized');
+                    navigate('/admin/users');
                 }
             } catch (error) {
                 setLoading(false);
@@ -38,7 +42,7 @@ const UpdateUser = () => {
         };
 
         fetchUser();
-    }, [userId]);
+    }, [userId, navigate, currentUser]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -47,7 +51,8 @@ const UpdateUser = () => {
                 name,
                 email,
                 phoneNumber,
-                address
+                address,
+                city
             });
             setLoading(false);
             navigate('/admin/users');
@@ -105,6 +110,17 @@ const UpdateUser = () => {
                                         className="form-control"
                                         value={phoneNumber}
                                         onChange={(e) => setPhoneNumber(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="phone_number_field">City</label>
+                                    <input
+                                        type="text"
+                                        id="addressfield"
+                                        className="form-control"
+                                        value={city}
+                                        onChange={(e) => setCity(e.target.value)}
                                         required
                                     />
                                 </div>
