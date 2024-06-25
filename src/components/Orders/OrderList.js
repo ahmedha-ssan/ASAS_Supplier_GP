@@ -56,7 +56,10 @@ const OrdersList = () => {
                                 <thead className="thead-dark">
                                     <tr>
                                         <th>Order ID</th>
-                                        <th>No of Items</th>
+                                        <th>User ID</th>
+                                        <th>Product Image</th>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
                                         <th>Amount</th>
                                         <th>Delivery Man</th>
                                         <th>Status</th>
@@ -65,6 +68,9 @@ const OrdersList = () => {
                                 <tbody>
                                     {filteredOrders.map(order => (
                                         <tr key={order._id}>
+                                            <td>{order._id}</td>
+                                            <td>{order._id}</td>
+                                            <td>{order._id}</td>
                                             <td>{order._id}</td>
                                             <td>{order.orderItems.length}</td>
                                             <td>${order.totalPrice}</td>
