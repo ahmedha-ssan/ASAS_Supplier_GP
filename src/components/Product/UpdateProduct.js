@@ -20,6 +20,7 @@ const UpdateProduct = () => {
     const [sizeY, setsizeY] = useState('');
     const [sizeZ, setsizeZ] = useState('');
     const [weight, setweight] = useState('');
+    const [color, setColor] = useState('');
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -48,6 +49,7 @@ const UpdateProduct = () => {
                         setsizeY(productData.sizeY);
                         setsizeZ(productData.sizeZ);
                         setweight(productData.weight);
+                        setColor(productData.color);
                         setLoading(false);
                     } else {
                         alert('You are not authorized to edit this product.');
@@ -83,7 +85,8 @@ const UpdateProduct = () => {
                 sizeX,
                 sizeY,
                 sizeZ,
-                weight
+                weight,
+                color
             });
             setLoading(false);
             navigate('/admin/products');
@@ -233,7 +236,17 @@ const UpdateProduct = () => {
                                         required
                                     />
                                 </div>
-
+                                <div className="form-group">
+                                    <label htmlFor="weight_field">Color</label>
+                                    <input
+                                        type="text"
+                                        id="weight_field"
+                                        className="form-control"
+                                        value={color}
+                                        onChange={(e) => setColor(e.target.value)}
+                                        required
+                                    />
+                                </div>
                                 <button type="submit" className="btn btn-primary">Save</button>
                             </form>
                         </div>

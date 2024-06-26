@@ -68,21 +68,26 @@ const ProductDetails = () => {
                                     <h3>{product ? product.productName : ''}</h3>
                                     <p id="product_id">Product ID : {id}</p>
                                     <hr />
+                                    <p id="product_seller mb-3">Sold by: <strong>{product.seller}</strong></p>
+                                    <hr />
+
                                     <div className="rating-outer">
                                         <div className="rating-inner" style={{ width: `${(product.ratings / 5) * 100}%` }}></div>
                                     </div>
+
                                     <span id="no_of_reviews">({product.numOfReviews} Reviews)</span>
                                     <hr />
                                     <p id="product_price">${product.price}</p>
                                     <hr />
-                                    <p>Status: <span id="stock_status" className={product.stock > 0 ? 'greenColor' : 'redColor'}>{product.stock > 0 ? 'In Stock' : 'Out of Stock'}</span> </p>
+                                    <p>Status: <span id="stock_status" className={product.stock > 0 ? 'greenColor' : 'redColor'}>{product.stock > 0 ? 'In Stock' : 'Out of Stock'} </span> ({product.stock})</p>
                                     <hr />
-                                    <p>Quantity: {product.stock} </p>
+                                    <h4 className="mt-2">Color:</h4>
+                                    <p>{product.color}</p>
                                     <hr />
+
                                     <h4 className="mt-2">Description:</h4>
                                     <p>{product.description}</p>
                                     <hr />
-                                    <p id="product_seller mb-3">Sold by: <strong>{product.seller}</strong></p>
                                     <div className="row mt-5">
                                         <div className="col-12 col-lg-8">
                                             <h3>Reviews</h3>
@@ -91,7 +96,7 @@ const ProductDetails = () => {
                                 </div>
 
                             </div>
- 
+
                         </div>
                     </div>
 

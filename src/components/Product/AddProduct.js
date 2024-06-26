@@ -30,6 +30,7 @@ const AddProduct = () => {
     const [stock, setStock] = useState("");
     const [seller, setSeller] = useState("");
     const [weight, setweight] = useState("");
+    const [color, setColor] = useState("");
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
@@ -116,6 +117,7 @@ const AddProduct = () => {
                             category,
                             stock,
                             weight,
+                            color,
                             seller,
                             images: downloadImageURLs,
                             model: modelDownloadURL,
@@ -145,6 +147,7 @@ const AddProduct = () => {
         setStock("");
         setweight("");
         setSeller("");
+        setColor("");
         setPreviewModel(null);
         setLoading(false);
         setUploadProgress(0);
@@ -218,7 +221,17 @@ const AddProduct = () => {
                                         required
                                     />
                                 </div>
-
+                                <div className="form-group">
+                                    <label for="price_field">Color</label>
+                                    <input
+                                        type="text"
+                                        id="price_field"
+                                        className="form-control"
+                                        value={color}
+                                        onChange={(e) => setColor(e.target.value)}
+                                        required
+                                    />
+                                </div>
                                 <div className="form-group d-flex align-items-center">
                                     <label htmlFor="size_x" className="mr-1">Size X:</label>
                                     <input
