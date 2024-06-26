@@ -9,7 +9,7 @@ const ProductDetails = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
-
+    
     useEffect(() => {
         const database = getDatabase();
         const productRef = ref(database, `products/${id}`);

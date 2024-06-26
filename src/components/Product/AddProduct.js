@@ -33,7 +33,6 @@ const AddProduct = () => {
     const [color, setColor] = useState("");
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         setImages([...images, ...files]);
@@ -106,7 +105,9 @@ const AddProduct = () => {
                         // Save product data to Firebase Realtime Database
                         const productsRef = rtdbRef(database, 'products');
                         const newProductRef = push(productsRef);
+                        const id = newProductRef.key;
                         await set(newProductRef, {
+                            id,
                             productName,
                             price,
                             material,
