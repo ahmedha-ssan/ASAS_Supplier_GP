@@ -107,11 +107,11 @@ const ProductCard = ({ product }) => {
                     <h5 className="card-title">
                         Stock: <a href={`/product/${product.id}`}>{product.stock}</a>
                     </h5>
-                    <div class="ratings mt-auto">
-                        <div class="rating-outer">
-                            <div class="rating-inner"></div>
+                    <div className="ratings mt-auto">
+                        <div className="rating-outer">
+                            <div className="rating-inner" style={{ width: `${(product.star / 5) * 100}%` }}></div>
                         </div>
-                        <span id="no_of_reviews">(5 Reviews)</span>
+                        <span id="no_of_reviews">({product.numOfReviews} Reviews)</span>
                     </div>
                     <a href={`/product/${product.id}`} id="view_btn" className="btn btn-block">View Details</a>
                 </div>

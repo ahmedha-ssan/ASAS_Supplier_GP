@@ -9,7 +9,7 @@ const Header = () => {
     const [userName, setUserName] = useState('');
     const [userImage, setUserImage] = useState('');
     const navigate = useNavigate();
-    const location = useLocation(); // Hook to get current location
+    const location = useLocation(); // Get the current location object
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -102,7 +102,7 @@ const Header = () => {
                         </div>
                     ) : (
                         // Conditionally render the login button
-                        location.pathname !== '/Login' && (
+                        location.pathname !== '/login' && (
                             <Link to="/login" className="btn ml-4" id="login_btn">Login</Link>
                         )
                     )}
