@@ -1,3 +1,14 @@
+.error-message {
+  color: #dc3545;
+  /* Bootstrap's danger/red color */
+  font-size: 0.875rem;
+  /* Adjust font size as needed */
+  margin-top: 0.25rem;
+  /* Add margin for spacing */
+}
+
+
+
 .thumbnail-images {
   display: flex;
   justify-content: center;

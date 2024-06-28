@@ -4,9 +4,7 @@ import MetaData from '../layout/metaData';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
-
-
-const UpdateProfile = ({ history }) => {
+const UpdateProfile = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [avatar, setAvatar] = useState('');
@@ -14,6 +12,7 @@ const UpdateProfile = ({ history }) => {
     const [phonenumber, setPhonenumber] = useState('');
     const [address, setAddress] = useState('');
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,20 +22,22 @@ const UpdateProfile = ({ history }) => {
                 if (currentUser) {
                     const userDoc = await getDoc(doc(db, 'supplier', currentUser.uid));
                     if (userDoc.exists()) {
-                        setName(userDoc.data().name);
-                        setEmail(userDoc.data().email);
-                        setPhonenumber(userDoc.data().phonenumber);
-                        setAddress(userDoc.data().address);
-                        setAvatarPreview(userDoc.data().avatar.url || '/images/default_avatar.jpg');
+                        const userData = userDoc.data();
+                        setName(userData.name);
+                        setEmail(userData.email); // Setting email from fetched data
+                        setPhonenumber(userData.phonenumber);
+                        setAddress(userData.address);
+                        setAvatarPreview(userData.avatar?.url || '/images/default_avatar.jpg');
                     } else {
-                        setLoading(false);
-                        alert('User not found');
+                        setError('User not found');
                     }
+                } else {
+                    setError('User not authenticated');
                 }
-                setLoading(false);
             } catch (error) {
+                setError(error.message);
+            } finally {
                 setLoading(false);
-                alert(error.message);
             }
         };
         fetchUserData();
@@ -44,12 +45,15 @@ const UpdateProfile = ({ history }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             const currentUser = auth.currentUser;
             if (currentUser) {
                 await updateDoc(doc(db, 'supplier', currentUser.uid), {
                     name,
-                    email,
                     phonenumber,
                     address,
                     avatar
@@ -59,9 +63,35 @@ const UpdateProfile = ({ history }) => {
                 alert('Profile updated successfully');
             }
         } catch (error) {
+            setError(error.message);
             setLoading(false);
-            alert(error.message);
         }
+    };
+
+    const validateForm = () => {
+        let valid = true;
+        const errors = {};
+
+        if (!name.trim()) {
+            errors.name = 'Name is required';
+            valid = false;
+        }
+
+        if (!phonenumber.trim()) {
+            errors.phonenumber = 'Phone number is required';
+            valid = false;
+        } else if (!/^\d{11}$/.test(phonenumber.trim())) {
+            errors.phonenumber = 'Phone number must be exactly 11 digits';
+            valid = false;
+        }
+
+        if (!address.trim()) {
+            errors.address = 'Address is required';
+            valid = false;
+        }
+
+        setError(errors);
+        return valid;
     };
 
     const onChange = (e) => {
@@ -85,16 +115,25 @@ const UpdateProfile = ({ history }) => {
             <div className="wrapper my-5">
                 <form className="shadow-lg" onSubmit={handleSubmit} encType="multipart/form-data">
                     <h1 className="mb-4">Update Profile</h1>
+
+                    {error && (
+                        <div className="alert alert-danger">
+                            {error.name && <p>{error.name}</p>}
+                            {error.phonenumber && <p>{error.phonenumber}</p>}
+                            {error.address && <p>{error.address}</p>}
+                        </div>
+                    )}
+
                     <div className="form-group">
                         <label htmlFor="name_field">Name</label>
                         <input
                             type="text"
                             id="name_field"
-                            className="form-control"
+                            className={`form-control ${error && error.name ? 'is-invalid' : ''}`}
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            required
                         />
+                        {error && error.name && <div className="invalid-feedback">{error.name}</div>}
                     </div>
                     <div className="form-group">
                         <label htmlFor="email_field">Email</label>
@@ -103,8 +142,7 @@ const UpdateProfile = ({ history }) => {
                             id="email_field"
                             className="form-control"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
+                            disabled // Making the email field disabled
                         />
                     </div>
                     <div className="form-group">
@@ -112,22 +150,22 @@ const UpdateProfile = ({ history }) => {
                         <input
                             type="text"
                             id="phone_number_field"
-                            className="form-control"
+                            className={`form-control ${error && error.phonenumber ? 'is-invalid' : ''}`}
                             value={phonenumber}
                             onChange={(e) => setPhonenumber(e.target.value)}
-                            required
                         />
+                        {error && error.phonenumber && <div className="invalid-feedback">{error.phonenumber}</div>}
                     </div>
                     <div className="form-group">
                         <label htmlFor="address_field">Address</label>
                         <input
                             type="text"
                             id="address_field"
-                            className="form-control"
+                            className={`form-control ${error && error.address ? 'is-invalid' : ''}`}
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
-                            required
                         />
+                        {error && error.address && <div className="invalid-feedback">{error.address}</div>}
                     </div>
                     <div className="form-group">
                         <label htmlFor="avatar_upload">Avatar</label>

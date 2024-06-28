@@ -15,7 +15,6 @@ const Register = () => {
     const [phonenumber, setPhonenumber] = useState('');
     const [confirmpassword, setConfirmpassword] = useState('');
     const [address, setAddress] = useState('');
-
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();

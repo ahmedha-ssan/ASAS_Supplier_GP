@@ -24,7 +24,6 @@ const Login = () => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (!user) {
-                // Redirect to login page if not authenticated
                 navigate('/login');
             }
         });

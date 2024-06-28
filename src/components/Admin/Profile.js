@@ -57,18 +57,17 @@ const Profile = () => {
                             <p>{user && user.name}</p>
                             <h4>Email Address</h4>
                             <p>{user && user.email}</p>
+                            <h4>Phone Number</h4>
+                            <p>{user && user.phonenumber}</p>
+                            <h4>Address</h4>
+                            <p>{user && user.address}</p>
+
                             <h4>Joined On</h4>
                             <p>{user && new Date(user.metadata.creationTime).toLocaleDateString()}</p>
 
                         </div>
                     </div>
-                    {!user && ( // Show Google sign-in button if no user is signed in
-                        <div className="text-center mt-5">
-                            <button onClick={handleGoogleSignIn} className="btn btn-danger py-3 px-5">
-                                Sign In with Google
-                            </button>
-                        </div>
-                    )}
+
                 </Fragment>
             )}
         </Fragment>
