@@ -22,6 +22,7 @@ const UpdateProduct = () => {
     const [weight, setweight] = useState('');
     const [color, setColor] = useState('');
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState({});
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,8 +33,6 @@ const UpdateProduct = () => {
 
                 if (productSnapshot.exists()) {
                     const productData = productSnapshot.val();
-
-                    // Get the current user's ID
                     const currentUserId = auth.currentUser.uid;
 
                     // Check if the product's userId matches the current user's ID
@@ -70,8 +69,81 @@ const UpdateProduct = () => {
         fetchProduct();
     }, [productId, navigate]);
 
+    const validateForm = () => {
+        let errors = {};
+        let isValid = true;
+
+        if (!productName.trim()) {
+            errors.productName = 'Product name is required';
+            isValid = false;
+        }
+
+        if (!price || isNaN(price) || parseFloat(price) <= 0) {
+            errors.price = 'Price is required (must be a positive number)';
+            isValid = false;
+        }
+
+        if (!stock || isNaN(stock) || parseInt(stock) < 0) {
+            errors.stock = 'Stock is required(must be a positive number)';
+            isValid = false;
+        }
+
+        if (!category.trim()) {
+            errors.category = 'Category is required';
+            isValid = false;
+        }
+
+        if (!description.trim()) {
+            errors.description = 'Description is required';
+            isValid = false;
+        }
+
+        if (!material.trim()) {
+            errors.material = 'Material is required';
+            isValid = false;
+        }
+
+        if (!seller.trim()) {
+            errors.seller = 'Seller is required';
+            isValid = false;
+        }
+
+        if (!sizeX || isNaN(sizeX) || parseFloat(sizeX) <= 0) {
+            errors.sizeX = 'Size X is required (must be a positive number)';
+            isValid = false;
+        }
+
+        if (!sizeY || isNaN(sizeY) || parseFloat(sizeY) <= 0) {
+            errors.sizeY = 'Size Y is required (must be a positive number)';
+            isValid = false;
+        }
+
+        if (!sizeZ || isNaN(sizeZ) || parseFloat(sizeZ) <= 0) {
+            errors.sizeZ = 'Size Z is required (must be a positive number)';
+            isValid = false;
+        }
+
+        if (!weight || isNaN(weight) || parseFloat(weight) <= 0) {
+            errors.weight = 'Weight is required (must be a positive number)';
+            isValid = false;
+        }
+
+        if (!color.trim()) {
+            errors.color = 'Color is required';
+            isValid = false;
+        }
+
+        setError(errors);
+        return isValid;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!validateForm()) {
+            return;
+        }
+        setLoading(true);
+
         try {
             const productRef = rtdbRef(database, `products/${productId}`);
             await update(productRef, {
@@ -113,116 +185,127 @@ const UpdateProduct = () => {
                         <div className="wrapper my-5">
                             <form className="shadow-lg" onSubmit={handleSubmit}>
                                 <h1 className="mb-4">Edit Product</h1>
+                                {error.general && <div className="alert alert-danger">{error.general}</div>}
 
                                 <div className="form-group">
                                     <label htmlFor="name_field">Product Name</label>
                                     <input
                                         type="text"
                                         id="name_field"
-                                        className="form-control"
+                                        className={`form-control ${error.productName && 'is-invalid'}`}
                                         value={productName}
                                         onChange={(e) => setProductName(e.target.value)}
-                                        required
                                     />
+                                    {error.productName && <div className="invalid-feedback">{error.productName}</div>}
+
+
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="price_field">Price</label>
                                     <input
                                         type="number"
                                         id="price_field"
-                                        className="form-control"
+                                        className={`form-control ${error.price && 'is-invalid'}`}
                                         value={price}
                                         onChange={(e) => setPrice(e.target.value)}
-                                        required
                                     />
+                                    {error.price && <div className="invalid-feedback">{error.price}</div>}
+
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="stock_field">Stock</label>
                                     <input
                                         type="number"
                                         id="stock_field"
-                                        className="form-control"
+                                        className={`form-control ${error.stock && 'is-invalid'}`}
                                         value={stock}
                                         onChange={(e) => setStock(e.target.value)}
-                                        required
                                     />
+                                    {error.stock && <div className="invalid-feedback">{error.stock}</div>}
+
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="category_field">Category</label>
                                     <input
                                         type="text"
                                         id="category_field"
-                                        className="form-control"
+                                        className={`form-control ${error.category && 'is-invalid'}`}
                                         value={category}
                                         onChange={(e) => setcategory(e.target.value)}
-                                        required
                                     />
+                                    {error.category && <div className="invalid-feedback">{error.category}</div>}
+
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="description_field">Description</label>
                                     <textarea
-                                        className="form-control"
+                                        className={`form-control ${error.description && 'is-invalid'}`}
                                         id="description_field"
                                         rows="8"
                                         value={description}
                                         onChange={(e) => setdescription(e.target.value)}
-                                        required
-                                    ></textarea>
+                                    />
+                                    {error.description && <div className="invalid-feedback">{error.description}</div>}
+
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="material_field">Material</label>
                                     <input
                                         type="text"
                                         id="material_field"
-                                        className="form-control"
+                                        className={`form-control ${error.material && 'is-invalid'}`}
                                         value={material}
                                         onChange={(e) => setmaterial(e.target.value)}
-                                        required
                                     />
+                                    {error.material && <div className="invalid-feedback">{error.material}</div>}
+
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="seller_field">Seller</label>
                                     <input
                                         type="text"
                                         id="seller_field"
-                                        className="form-control"
+                                        className={`form-control ${error.seller && 'is-invalid'}`}
                                         value={seller}
                                         onChange={(e) => setSeller(e.target.value)}
-                                        required
                                     />
+                                    {error.seller && <div className="invalid-feedback">{error.seller}</div>}
+
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="sizeX_field">Size X</label>
                                     <input
                                         type="number"
                                         id="sizeX_field"
-                                        className="form-control"
+                                        className={`form-control ${error.sizeX && 'is-invalid'}`}
                                         value={sizeX}
                                         onChange={(e) => setsizeX(e.target.value)}
-                                        required
                                     />
+                                    {error.sizeX && <div className="invalid-feedback">{error.sizeX}</div>}
+
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="sizeY_field">Size Y</label>
                                     <input
                                         type="number"
                                         id="sizeY_field"
-                                        className="form-control"
+                                        className={`form-control ${error.sizeY && 'is-invalid'}`}
                                         value={sizeY}
                                         onChange={(e) => setsizeY(e.target.value)}
-                                        required
                                     />
+                                    {error.sizeY && <div className="invalid-feedback">{error.sizeY}</div>}
+
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="sizeZ_field">Size Z</label>
                                     <input
                                         type="number"
                                         id="sizeZ_field"
-                                        className="form-control"
+                                        className={`form-control ${error.sizeZ && 'is-invalid'}`}
                                         value={sizeZ}
                                         onChange={(e) => setsizeZ(e.target.value)}
-                                        required
                                     />
+                                    {error.sizeZ && <div className="invalid-feedback">{error.sizeZ}</div>}
 
                                 </div>
                                 <div className="form-group">
@@ -230,22 +313,24 @@ const UpdateProduct = () => {
                                     <input
                                         type="number"
                                         id="weight_field"
-                                        className="form-control"
+                                        className={`form-control ${error.weight && 'is-invalid'}`}
                                         value={weight}
                                         onChange={(e) => setweight(e.target.value)}
-                                        required
                                     />
+                                    {error.weight && <div className="invalid-feedback">{error.weight}</div>}
+
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="weight_field">Color</label>
                                     <input
                                         type="text"
                                         id="weight_field"
-                                        className="form-control"
+                                        className={`form-control ${error.color && 'is-invalid'}`}
                                         value={color}
                                         onChange={(e) => setColor(e.target.value)}
-                                        required
                                     />
+                                    {error.color && <div className="invalid-feedback">{error.color}</div>}
+
                                 </div>
                                 <button type="submit" className="btn btn-primary">Save</button>
                             </form>
