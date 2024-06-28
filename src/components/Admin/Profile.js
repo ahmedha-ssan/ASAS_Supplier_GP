@@ -30,6 +30,7 @@ const Profile = () => {
         return () => unsubscribe();
     }, []);
 
+    // eslint-disable-next-line no-unused-vars
     const handleGoogleSignIn = () => {
         signInWithGoogle(); // Trigger Google sign-in
     };

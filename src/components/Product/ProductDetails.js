@@ -9,7 +9,7 @@ const ProductDetails = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
-    
+
     useEffect(() => {
         const database = getDatabase();
         const productRef = ref(database, `products/${id}`);
@@ -20,6 +20,7 @@ const ProductDetails = () => {
                 if (snapshot.exists()) {
                     setProduct(snapshot.val());
                 }
+
             } catch (error) {
                 console.error('Error fetching product data:', error);
             }
@@ -72,7 +73,7 @@ const ProductDetails = () => {
                                     <hr />
 
                                     <div className="rating-outer">
-                                        <div className="rating-inner" style={{ width: `${(product.ratings / 5) * 100}%` }}></div>
+                                        <div className="rating-inner" style={{ width: `${(product.star / 5) * 100}%` }}></div>
                                     </div>
 
                                     <span id="no_of_reviews">({product.numOfReviews} Reviews)</span>
@@ -88,10 +89,16 @@ const ProductDetails = () => {
                                     <h4 className="mt-2">Description:</h4>
                                     <p>{product.description}</p>
                                     <hr />
+
                                     <div className="row mt-5">
                                         <div className="col-12 col-lg-8">
                                             <h3>Reviews</h3>
                                         </div>
+                                        {product.reviews && product.reviews.map((reviews, index) => (
+                                            <div key={index} className="mb-3">
+                                                <h5>Review {index + 1}: {reviews}</h5>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
 
