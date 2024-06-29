@@ -1,34 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
+import { auth } from '../../firebase';
 
 const Search = () => {
     const [keyword, setKeyword] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const navigate = useNavigate();
-    const database = getDatabase(); // Get your Firebase database reference
+    const database = getDatabase();
 
     useEffect(() => {
-        const productsRef = ref(database, 'products');
+        const fetchProducts = async () => {
+            try {
+                const userId = auth.currentUser.uid; // Get current user ID
+                const productsRef = ref(database, 'products');
 
-        // Fetch all products once when component mounts
-        onValue(productsRef, (snapshot) => {
-            const productsData = snapshot.val();
-            if (productsData) {
-                const productNames = Object.values(productsData).map(product => product.productName);
-                setSuggestions(productNames);
+                onValue(productsRef, (snapshot) => {
+                    const productsData = snapshot.val();
+                    if (productsData) {
+                        const filteredProducts = Object.values(productsData)
+                            .filter(product => product.userId === userId) // Filter products by user ID
+                            .map(product => product.productName);
+                        setSuggestions(filteredProducts);
+                    }
+                });
+            } catch (error) {
+                console.error("Error fetching products: ", error);
             }
-        });
+        };
+
+        fetchProducts();
     }, [database]);
+
+
     const searchHandler = (e) => {
         e.preventDefault()
-
         if (keyword.trim()) {
             navigate(`/search/${keyword}`); // Use navigate instead of history.push
         } else {
             navigate('/');
         }
     }
+
+
     const handleInputChange = (e) => {
         const input = e.target.value;
         setKeyword(input);
@@ -39,6 +53,7 @@ const Search = () => {
         );
         setSuggestions(filteredSuggestions);
     };
+
     return (
         <form onSubmit={searchHandler} autoComplete="off">
             <div className="input-group">

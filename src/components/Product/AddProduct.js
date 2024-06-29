@@ -257,16 +257,7 @@ const AddProduct = () => {
                     <Fragment>
                         <div className="wrapper my-5">
                             <form className="shadow-lg">
-                                {loading && (
-                                    <ProgressBar
-                                        animated
-                                        now={uploadProgress}
-                                        label={`${Math.round(uploadProgress)}%`}
 
-                                        className=""
-                                        style={{ width: '100%', borderRadius: '4px' }}
-                                    />
-                                )}
                                 <h1 className="mb-4">New Product</h1>
                                 {error.general && <div className="alert alert-danger">{error.general}</div>}
 
@@ -315,7 +306,7 @@ const AddProduct = () => {
                                         value={weight}
                                         onChange={(e) => setweight(e.target.value)}
                                     />
-                                    {error.weight && <div className="invalid-feedback">{error.material}</div>}
+                                    {error.weight && <div className="invalid-feedback">{error.weight}</div>}
                                 </div>
 
                                 <div className="form-group">
@@ -330,6 +321,7 @@ const AddProduct = () => {
                                     {error.color && <div className="invalid-feedback">{error.material}</div>}
 
                                 </div>
+
                                 <div className="form-group d-flex align-items-center">
                                     <label htmlFor="size_x" className="mr-1">Size X:</label>
                                     <input
@@ -367,7 +359,7 @@ const AddProduct = () => {
                                     <textarea
                                         className={`form-control ${error.description && 'is-invalid'}`}
                                         id="description_field"
-                                        rows="8"
+                                        rows="2"
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
                                     />
@@ -481,7 +473,16 @@ const AddProduct = () => {
                                 >
                                     CREATE
                                 </button>
-
+                                <br />
+                                {loading && (
+                                    <ProgressBar
+                                        animated
+                                        now={uploadProgress}
+                                        label={`${Math.round(uploadProgress)}%`}
+                                        className=""
+                                        style={{ width: '100%', borderRadius: '4px' }}
+                                    />
+                                )}
                             </form>
                         </div> </Fragment>
                 </div>
