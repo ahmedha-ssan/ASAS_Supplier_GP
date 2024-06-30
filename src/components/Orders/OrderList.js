@@ -101,11 +101,11 @@ const OrdersList = () => {
                                         {filteredOrders.map(order => (
                                             <tr key={order.id}>
                                                 <td>{order.id}</td>
-                                                <td>{order.userId}</td>
-                                                <td>{order.productId}</td>
+                                                <td>{order.user_id}</td>
+                                                <td>{order.product_id}</td>
                                                 <td>${order.totalPrice}</td>
-                                                <td>{order.quantity}</td>
-                                                <td>{order.deliveryId}</td>
+                                                <td>{order.Quantity}</td>
+                                                <td>{order.delivery_id}</td>
                                                 <td>
                                                     {order.status === "delivered" ? (
                                                         <span style={{ color: 'green' }}>{order.status}</span>
