@@ -375,16 +375,15 @@ const AddProduct = () => {
                                         value={category}
                                         onChange={(e) => setCategory(e.target.value)}
                                     >
-                                        <option value="Electronics">Electronics</option>
-                                        <option value="Clothing">Clothing</option>
-                                        <option value="Books">Books</option>
-                                        <option value="Home">Home</option>
-                                        <option value="Toys">Toys</option>
+                                        <option value="Furniture">Furniture</option>
+                                        <option value="Decoration">Decoration</option>
+                                        <option value="Office">Office</option>
+                                        <option value="Ligthing">Ligthing</option>
                                     </select>
                                 </div>
 
 
-                                <div className="form-group">
+                                <div className="form-group"> 
                                     <label htmlFor="stock_field">Stock</label>
                                     <input
                                         type="text"

@@ -1,22 +1,53 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect, useCallback } from 'react';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db, auth } from '../../firebase';
 import Sidebar from '../layout/Sidebar';
 import MetaData from '../layout/metaData';
+import Loader from '../layout/Loader';
 
 const OrdersList = () => {
-    // Dummy orders data
-    const orders = [
-        { _id: 1, orderItems: [{ id: 1, name: 'Product 1', price: 10 }, { id: 2, name: 'Product 2', price: 20 }], totalPrice: 30, orderStatus: 'Delivered', deliveryMan: 'John Doe' },
-        { _id: 2, orderItems: [{ id: 3, name: 'Product 3', price: 15 }], totalPrice: 15, orderStatus: 'Processing', deliveryMan: '2ltyar' },
-        // Add more dummy orders as needed
-    ];
+    const [orders, setOrders] = useState([]); // Ensure initial state is an empty array
+    const [filteredOrders, setFilteredOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
-    const [filteredOrders, setFilteredOrders] = useState(orders);
+
+    const fetchOrders = useCallback(async () => {
+        setLoading(true);
+        try {
+            const currentUser = auth.currentUser;
+            if (!currentUser) {
+                throw new Error("No authenticated user found.");
+            }
+
+            const seller_id = currentUser.uid; // Assuming supplier ID is the UID of the authenticated user
+
+            const ordersQuery = query(
+                collection(db, 'orders'),
+                where('seller_id', '==', seller_id)
+            );
+            const ordersSnapshot = await getDocs(ordersQuery);
+            const fetchedOrders = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            setOrders(fetchedOrders);
+            setFilteredOrders(fetchedOrders);
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+            alert('Failed to fetch orders');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]);
 
     const submitHandler = (e) => {
         e.preventDefault();
-        const searchResult = orders.filter(order => order._id.toString().includes(search));
+        const searchResult = orders.filter(order => order.id.includes(search));
         setFilteredOrders(searchResult);
     };
+
     return (
         <Fragment>
             <MetaData title={'All Orders'} />
@@ -40,7 +71,6 @@ const OrdersList = () => {
                                             onChange={(e) => setSearch(e.target.value)}
                                         />
                                     </div>
-
                                     <button
                                         id="search_button"
                                         type="submit"
@@ -52,39 +82,42 @@ const OrdersList = () => {
                             </div>
                         </div>
                         <div className="table-responsive mt-5">
-                            <table className="table table-bordered table-hover">
-                                <thead className="thead-dark">
-                                    <tr>
-                                        <th>Order ID</th>
-                                        <th>User ID</th>
-                                        <th>Product Image</th>
-                                        <th>Product Name</th>
-                                        <th>Quantity</th>
-                                        <th>Amount</th>
-                                        <th>Delivery Man</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredOrders.map(order => (
-                                        <tr key={order._id}>
-                                            <td>{order._id}</td>
-                                            <td>{order._id}</td>
-                                            <td>{order._id}</td>
-                                            <td>{order._id}</td>
-                                            <td>{order.orderItems.length}</td>
-                                            <td>${order.totalPrice}</td>
-                                            <td>{order.deliveryMan}</td>
-                                            <td>
-                                                {order.orderStatus && String(order.orderStatus).includes('Delivered')
-                                                    ? <span style={{ color: 'green' }}>{order.orderStatus}</span>
-                                                    : <span style={{ color: 'red' }}>{order.orderStatus}</span>
-                                                }
-                                            </td>
+                            {loading ? (
+                                <Loader />
+                            ) : (
+                                <table className="table table-bordered table-hover">
+                                    <thead className="thead-dark">
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>User ID</th>
+                                            <th>Product ID</th>
+                                            <th>Product Price</th>
+                                            <th>Quantity</th>
+                                            <th>Delivery Man ID</th>
+                                            <th>Status</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {filteredOrders.map(order => (
+                                            <tr key={order.id}>
+                                                <td>{order.id}</td>
+                                                <td>{order.userId}</td>
+                                                <td>{order.productId}</td>
+                                                <td>${order.totalPrice}</td>
+                                                <td>{order.quantity}</td>
+                                                <td>{order.deliveryId}</td>
+                                                <td>
+                                                    {order.status === "delivered" ? (
+                                                        <span style={{ color: 'green' }}>{order.status}</span>
+                                                    ) : (
+                                                        <span style={{ color: 'red' }}>{order.status}</span>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
                         </div>
                     </Fragment>
                 </div>
