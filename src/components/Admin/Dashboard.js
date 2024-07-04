@@ -47,9 +47,16 @@ const Dashboard = () => {
                     setTotalPrice(total);
                     setProductCount(count);
                     setOutOfStockCount(outOfStock);
-                    console.log('Total:', total);
-
                 });
+                // Fetch orders count
+                const ordersQuery = query(collection(db, 'orders'), where('seller_id', '==', supplierId));
+                const ordersSnapshot = await getDocs(ordersQuery);
+                setOrdersCount(ordersSnapshot.size);
+
+                // Fetch refunds count
+                const refundsQuery = query(collection(db, 'refunds'), where('seller_id', '==', supplierId), where('status', '==', 'pending'));
+                const refundsSnapshot = await getDocs(refundsQuery);
+                setRefundsCount(refundsSnapshot.size);
             } catch (error) {
                 console.error('Error fetching user count:', error);
             }
@@ -66,13 +73,24 @@ const Dashboard = () => {
                     <Sidebar />
                 </div>
                 <div className="col-12 col-md-10">
+
                     <h1 className="my-4">Dashboard</h1>
+
                     <div className="row pr-4">
                         <div className="col-xl-12 col-sm-12 mb-3">
                             <div className="card text-white bg-primary o-hidden h-100">
                                 <div className="card-body">
                                     <div className="text-center card-font-size">Total Amount<br /> <b>EGP: {totalPrice}</b>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row pr-4">
+                        <div className="col-xl-12 col-sm-12 mb-3">
+                            <div className="card text-white bg-warning o-hidden h-100">
+                                <div className="card-body">
+                                    <div className="text-center card-font-size">Out of Stock<br /> <b>{outOfStockCount}</b></div>
                                 </div>
                             </div>
                         </div>
@@ -97,7 +115,7 @@ const Dashboard = () => {
                         <div className="col-xl-3 col-sm-6 mb-3">
                             <div className="card text-white bg-danger o-hidden h-100">
                                 <div className="card-body">
-                                    <div className="text-center card-font-size">Orders<br /> <b>125</b></div>
+                                    <div className="text-center card-font-size">Orders<br /> <b>{ordersCount}</b></div>
                                 </div>
                                 <Link className="card-footer text-white clearfix small z-1" to="/admin/orders">
                                     <span className="float-left">View Details</span>
@@ -112,7 +130,7 @@ const Dashboard = () => {
                         <div className="col-xl-3 col-sm-6 mb-3">
                             <div className="card text-white bg-dark o-hidden h-100">
                                 <div className="card-body">
-                                    <div className="text-center card-font-size">Refunds<br /> <b>125</b></div>
+                                    <div className="text-center card-font-size">Refunds<br /> <b>{refundsCount}</b></div>
                                 </div>
                                 <Link className="card-footer text-white clearfix small z-1" to="/admin/refunds">
                                     <span className="float-left">View Details</span>
@@ -139,13 +157,7 @@ const Dashboard = () => {
                         </div>
 
 
-                        <div className="col-xl-3 col-sm-6 mb-3">
-                            <div className="card text-white bg-warning o-hidden h-100">
-                                <div className="card-body">
-                                    <div className="text-center card-font-size">Out of Stock<br /> <b>{outOfStockCount}</b></div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 
