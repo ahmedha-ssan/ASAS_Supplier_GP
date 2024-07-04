@@ -10,7 +10,8 @@ const Dashboard = () => {
     const [productCount, setProductCount] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
     const [outOfStockCount, setOutOfStockCount] = useState(0);
-
+    const [ordersCount, setOrdersCount] = useState(0);
+    const [refundsCount, setRefundsCount] = useState(0);
     useEffect(() => {
         const fetchCounts = async () => {
             try {
@@ -99,6 +100,21 @@ const Dashboard = () => {
                                     <div className="text-center card-font-size">Orders<br /> <b>125</b></div>
                                 </div>
                                 <Link className="card-footer text-white clearfix small z-1" to="/admin/orders">
+                                    <span className="float-left">View Details</span>
+                                    <span className="float-right">
+                                        <i className="fa fa-angle-right"></i>
+                                    </span>
+                                </Link>
+                            </div>
+                        </div>
+
+
+                        <div className="col-xl-3 col-sm-6 mb-3">
+                            <div className="card text-white bg-dark o-hidden h-100">
+                                <div className="card-body">
+                                    <div className="text-center card-font-size">Refunds<br /> <b>125</b></div>
+                                </div>
+                                <Link className="card-footer text-white clearfix small z-1" to="/admin/refunds">
                                     <span className="float-left">View Details</span>
                                     <span className="float-right">
                                         <i className="fa fa-angle-right"></i>
