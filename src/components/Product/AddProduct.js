@@ -24,7 +24,7 @@ const AddProduct = () => {
     const [sizeY, setSizeY] = useState("");
     const [sizeZ, setSizeZ] = useState("");
     const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("Electronics");
+    const [category, setCategory] = useState("Furniture");
     const [stock, setStock] = useState("");
     const [seller, setSeller] = useState("");
     const [weight, setweight] = useState("");
@@ -378,12 +378,12 @@ const AddProduct = () => {
                                         <option value="Furniture">Furniture</option>
                                         <option value="Decoration">Decoration</option>
                                         <option value="Office">Office</option>
-                                        <option value="Ligthing">Ligthing</option>
+                                        <option value="lightning">Lightning</option>
                                     </select>
                                 </div>
 
 
-                                <div className="form-group"> 
+                                <div className="form-group">
                                     <label htmlFor="stock_field">Stock</label>
                                     <input
                                         type="text"
