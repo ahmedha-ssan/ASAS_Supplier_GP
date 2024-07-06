@@ -9,8 +9,7 @@ const Header = () => {
     const [userName, setUserName] = useState('');
     const [userImage, setUserImage] = useState('');
     const navigate = useNavigate();
-    const location = useLocation(); // Get the current location object
-
+    const location = useLocation();
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -57,9 +56,9 @@ const Header = () => {
         <Fragment>
             <nav className="navbar row">
                 <div className="col-12 col-md-3">
-                    <div className="navbar-brand">
+                    <div className="navbar-brand" style={{ marginLeft: '20px' }}>
                         <Link to="/">
-                            <img src="/images/hs.png" alt="ASAS Logo" />
+                            <img src="/images/last.png" alt="ASAS Logo" />
                         </Link>
                     </div>
                 </div>
