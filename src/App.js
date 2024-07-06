@@ -22,6 +22,7 @@ import Profile from './components/Admin/Profile';
 import UpdateProfile from './components/Admin/UpdateAdminProfile'
 import ProductDetails from './components/Product/ProductDetails';
 import UpdateProduct from './components/Product/UpdateProduct';
+import Test from './components/Product/test';
 
 
 function App() {
@@ -92,6 +93,8 @@ function App() {
               <Route path="/Product/:id" element={<ProductDetails />} />
               <Route path="/admin/products" element={<ProductList />} />
               <Route path="/admin/product/:productId" element={<UpdateProduct />} />
+              <Route path="/admin/test" element={<Test />} />
+
               <Route path="/admin/addproducts" element={<NewProduct />} />
               <Route path="/admin/adddelivery" element={<NewDelivery />} />
               <Route path="/admin/orders" element={<OrdersList />} />

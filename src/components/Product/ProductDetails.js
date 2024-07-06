@@ -4,11 +4,14 @@ import Loader from '../layout/Loader';
 import { useParams } from 'react-router-dom';
 import { getDatabase, ref, get } from 'firebase/database';
 import Sidebar from '../layout/Sidebar';
+import { db } from '../../firebase'; // Ensure this path is correct
+import { collection, query, getDocs } from 'firebase/firestore';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
         const database = getDatabase();
@@ -20,7 +23,6 @@ const ProductDetails = () => {
                 if (snapshot.exists()) {
                     setProduct(snapshot.val());
                 }
-
             } catch (error) {
                 console.error('Error fetching product data:', error);
             }
@@ -28,6 +30,49 @@ const ProductDetails = () => {
         };
 
         fetchProduct();
+    }, [id]);
+
+    useEffect(() => {
+        const fetchUsersWithComments = async () => {
+            setLoading(true);
+            try {
+                // Query to fetch users from 'users' collection
+                const usersQuery = query(collection(db, 'users'));
+                const usersSnapshot = await getDocs(usersQuery);
+
+                // Map over each user and fetch their comments
+                const usersList = await Promise.all(
+                    usersSnapshot.docs.map(async userDoc => {
+                        const userData = userDoc.data();
+                        const userId = userDoc.id;
+
+                        // Query to fetch comments from 'comment and reviews' sub-collection
+                        const commentsQuery = query(collection(db, `users/${userId}/comment and reviews`));
+                        const commentsSnapshot = await getDocs(commentsQuery);
+                        const commentsList = commentsSnapshot.docs.map(commentDoc => ({
+                            id: commentDoc.id,
+                            ...commentDoc.data()
+                        }));
+
+                        // Filter comments to include only those matching the product_id
+                        const filteredComments = commentsList.filter(comment => comment.product_id === id);
+
+                        return {
+                            id: userId,
+                            name: userData.name,
+                            comments: filteredComments
+                        };
+                    })
+                );
+
+                setUsers(usersList);
+            } catch (error) {
+                console.error('Error fetching users and comments:', error);
+            }
+            setLoading(false);
+        };
+
+        fetchUsersWithComments();
     }, [id]);
 
     const handleThumbnailClick = (imageUrl) => {
@@ -76,7 +121,7 @@ const ProductDetails = () => {
                                         <div className="rating-inner" style={{ width: `${(product.star / 5) * 100}%` }}></div>
                                     </div>
 
-                                    <span id="no_of_reviews">({product.numOfReviews} Reviews)</span>
+                                    <span id="no_of_reviews">({product.commentCount} Reviews)</span>
                                     <hr />
                                     <p id="product_price">${product.price}</p>
                                     <hr />
@@ -94,9 +139,13 @@ const ProductDetails = () => {
                                         <div className="col-12 col-lg-8">
                                             <h3>Reviews</h3>
                                         </div>
-                                        {product.reviews && product.reviews.map((reviews, index) => (
-                                            <div key={index} className="mb-3">
-                                                <h5>Review {index + 1}: {reviews}</h5>
+                                        {users.map(user => (
+                                            <div key={user.id}>
+                                                {user.comments.length > 0 && (
+                                                    user.comments.map((comment, index) => (
+                                                        <p key={index}> {user.id}: {comment.comment} </p>
+                                                    ))
+                                                )}
                                             </div>
                                         ))}
                                     </div>

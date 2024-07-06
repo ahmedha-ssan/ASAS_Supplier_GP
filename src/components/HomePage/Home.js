@@ -111,7 +111,7 @@ const ProductCard = ({ product }) => {
                         <div className="rating-outer">
                             <div className="rating-inner" style={{ width: `${(product.star / 5) * 100}%` }}></div>
                         </div>
-                        <span id="no_of_reviews">({product.numOfReviews} Reviews)</span>
+                        <span id="no_of_reviews">({product.commentCount} Reviews)</span>
                     </div>
                     <a href={`/product/${product.id}`} id="view_btn" className="btn btn-block">View Details</a>
                 </div>
