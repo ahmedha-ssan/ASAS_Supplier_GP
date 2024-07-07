@@ -135,20 +135,18 @@ const ProductDetails = () => {
                                     <p>{product.description}</p>
                                     <hr />
 
-                                    <div className="row mt-5">
-                                        <div className="col-12 col-lg-8">
-                                            <h3>Reviews</h3>
+                                    <h3>Reviews</h3>
+
+                                    {users.map(user => (
+                                        <div key={user.id}>
+                                            {user.comments.length > 0 && (
+                                                user.comments.map((comment, index) => (
+                                                    <p key={index}> {user.id}: {comment.comment} </p>
+                                                ))
+                                            )}
                                         </div>
-                                        {users.map(user => (
-                                            <div key={user.id}>
-                                                {user.comments.length > 0 && (
-                                                    user.comments.map((comment, index) => (
-                                                        <p key={index}> {user.id}: {comment.comment} </p>
-                                                    ))
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
+                                    ))}
+
                                 </div>
 
                             </div>

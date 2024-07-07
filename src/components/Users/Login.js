@@ -1,25 +1,21 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup, setPersistence, browserSessionPersistence, onAuthStateChanged } from 'firebase/auth';
-import { auth, db, provider } from '../../firebase'
-import { getDoc, doc } from "firebase/firestore";
+import { auth, db, provider } from '../../firebase';
+import { getDoc, doc } from 'firebase/firestore';
 import MetaData from '../layout/metaData';
 import Loader from '../layout/Loader';
 
-const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-};
-const validatePassword = (password) => {
-    return password.length >= 6; // Ensure password is at least 6 characters long
-};
+// Email and password validation functions
+const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+const validatePassword = (password) => password.length >= 6; // Ensure password is at least 6 characters long
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
     const navigate = useNavigate();
-
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -33,15 +29,18 @@ const Login = () => {
     const submitHandler = async (e) => {
         e.preventDefault();
         setLoading(true);
+        let fieldErrors = {};
 
         if (!validateEmail(email)) {
-            setLoading(false);
-            alert('Invalid email format');
-            return;
+            fieldErrors.email = 'Invalid email format';
         }
         if (!validatePassword(password)) {
+            fieldErrors.password = 'Invalid Password';
+        }
+
+        if (Object.keys(fieldErrors).length > 0) {
+            setErrors(fieldErrors);
             setLoading(false);
-            alert('Password must be at least 6 characters long');
             return;
         }
 
@@ -96,7 +95,7 @@ const Login = () => {
 
 
     return (
-        <Fragment >
+        <Fragment>
             {loading ? <Loader /> : (
                 <Fragment className="yasser">
                     <MetaData title={'Login'} />
@@ -104,17 +103,18 @@ const Login = () => {
                     <div className="row wrapper">
                         <div className="col-10 col-lg-5">
                             <form className="shadow-lg" onSubmit={submitHandler}>
-
                                 <h1 className="mb-3">Welcome Back!</h1>
+
                                 <div className="form-group">
                                     <label htmlFor="email_field">Email</label>
                                     <input
                                         type="email"
                                         id="email_field"
-                                        className="form-control"
+                                        className={`form-control ${errors.email && 'is-invalid'}`}
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                     />
+                                    {errors.email && <div className="error-message text-danger">{errors.email}</div>}
                                 </div>
 
                                 <div className="form-group">
@@ -122,10 +122,11 @@ const Login = () => {
                                     <input
                                         type="password"
                                         id="password_field"
-                                        className="form-control"
+                                        className={`form-control ${errors.password && 'is-invalid'}`}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                     />
+                                    {errors.password && <div className="error-message text-danger">{errors.password}</div>}
                                 </div>
 
                                 <Link to="/password/forgot" className="float-right mb-4">Forgot Password?</Link>
@@ -145,9 +146,7 @@ const Login = () => {
                                     disabled={loading}
                                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-
                                     <img src="/images/sss.png" alt="Google Logo" style={{ width: '30px', marginRight: '30px' }} />
-
                                     SIGN IN WITH GOOGLE
                                 </button>
                                 <Link to="/Register" className="float-right mt-3">New User?</Link>
